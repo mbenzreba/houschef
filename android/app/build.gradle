@@ -58,6 +58,13 @@ flutter {
     source '../..'
 }
 
+repositories {
+    flatDir {
+        dirs 'lib'
+    }
+}
+
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation files('lib/recipe-pattern-finder-0.3-SNAPSHOT.jar')
 }
