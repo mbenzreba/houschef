@@ -1,6 +1,6 @@
-# chef
+# Houschef
 
-A new Flutter project.
+A new voice interactive cooking assistant
 
 ## Getting Started
 
