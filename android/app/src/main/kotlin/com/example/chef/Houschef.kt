@@ -1,4 +1,4 @@
-package com.example.houschefexperiments
+package com.example.chef
 
 import android.app.Activity
 import android.content.Context
