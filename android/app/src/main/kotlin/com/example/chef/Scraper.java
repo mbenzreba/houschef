@@ -1,4 +1,3 @@
-
 package com.example.webscraping;
 import android.util.Log;
 
@@ -50,6 +49,8 @@ public class Scraper {
 
             r.setTitle(titles.eq(i).text());
             r.setImgUrl(images.eq(i).attr("src"));
+
+
             r.setUrl(links.eq((i + 1) * 2).attr("href"));
 
             recipes.add(r);
@@ -62,9 +63,13 @@ public class Scraper {
 
     
 
-    public Recipe getRecipeByUrl(Recipe r){
+    public Recipe getDetails(Recipe r){
 
-
+        try {
+            r.setHtml(Jsoup.connect(r.getUrl()).get().html());
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 
         return r;
     }
