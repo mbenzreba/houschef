@@ -6,17 +6,28 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity: FlutterActivity() {
-    private val ASSISTANT_CHANNEL = "com.example.chef/assistant"
-    
-    // Set up method channel
-    // private val a_channel = MethodChannel(flutterView, ASSISTANT_CHANNEL)
 
+
+    /***************************************************************************************************/
+    /******************************* INTERACTIVE VOICE ASSISTANT CHANNEL *******************************/
+    /***************************************************************************************************/
+
+
+    // Channel for communicating with the assistant
+    private val ASSISTANT_CHANNEL = "com.example.chef/assistant"
+
+    // Channel for communicating with web scraping
+    private val SEARCH_CHANNEL = "com.example.chef/search"
+
+
+    /**
+     * 
+     */
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, ASSISTANT_CHANNEL).setMethodCallHandler {
             call, result ->
             // Note: this method is invoked on the main thread.
-            // TODO
             if (call.method == "startCooking") {
                 result.success(startCooking(call.arguments))
             }
@@ -27,14 +38,57 @@ class MainActivity: FlutterActivity() {
                 result.notImplemented()
             }
         }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, SEARCH_CHANNEL).setMethodCallHandler {
+            call, result ->
+            // Note: this method is invoked on the main thread.
+            if (call.method == "search") {
+                result.success(search(call.arguments))
+            }
+            else {
+                result.notImplemented()
+            }
+        }
     }
 
+
+
+    /**
+     * 
+     */
     private fun startCooking(recipeUrl: Any) : String {
+        // TODO: Write the actual function
+        // Scrape the recipe from the url and get the details
+        // Save these details to some SmartRecipe.kt
+        // Inside SmartRecipe, do what you have to do...
+        // Then, return the first step from SmartRecipe as a plain string!!
         return "We started cooking with a recipe at ${recipeUrl}"
     }
 
+
+
+    /**
+     * 
+     */
     private fun tellAssistant() : String {
         return "I told the assistant..."
     }
+
+
+
+    /***************************************************************************************************/
+    /************************************** ONLINE SEARCH CHANNEL **************************************/
+    /***************************************************************************************************/
+
+
+    private fun search(terms: Any) : String {
+        return "Searching functionality currently unavailable"
+    }
+
+    
+
+
+
+    
 }
 
