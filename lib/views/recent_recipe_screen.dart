@@ -15,10 +15,48 @@ class RecentRecipes extends StatefulWidget {
 class _RecentRecipesState extends State<RecentRecipes> {
   static const platform = const MethodChannel("com.example.chef/assistant");
 
+  String _content = 'No methodchannel has been called yet';
+
+  Future<void> _startCooking() async {
+    String content;
+    try {
+      content = await platform.invokeMethod('startCooking');
+    } on PlatformException catch (e) {
+      content = "Failed to start cooking";
+    }
+
+    setState(() {
+      _content = content;
+    });
+  }
+
+  Future<void> _tellAssistant() async {
+    String content;
+    try {
+      content = await platform.invokeMethod('tellAssistant');
+    } on PlatformException catch (e) {
+      content = "Failed to tell assistant";
+    }
+
+    setState(() {
+      _content = content;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('This is where recent recipes will go'),
+    return Column(
+      children: [
+        Center(
+          child:
+            ElevatedButton(child: 
+              Text("Call methodchannel"),
+              onPressed: _startCooking,
+              onLongPress: _tellAssistant,
+            )
+        ),
+        Center(child: Text(_content),)
+      ]
     );
   }
 
