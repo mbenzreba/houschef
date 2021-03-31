@@ -17,15 +17,24 @@ class MainActivity: FlutterActivity() {
             call, result ->
             // Note: this method is invoked on the main thread.
             // TODO
+            if (call.method == "startCooking") {
+                result.success(startCooking())
+            }
+            else if (call.method == "tellAssistant") {
+                result.success(tellAssistant())
+            }
+            else {
+                result.notImplemented()
+            }
         }
     }
 
-    private fun startCooking() {
-        // ...
+    private fun startCooking() : String {
+        return "We started cooking!"
     }
 
-    private fun tellAssistant() {
-        // ...
+    private fun tellAssistant() : String {
+        return "I told the assistant..."
     }
 }
 
