@@ -18,7 +18,7 @@ class MainActivity: FlutterActivity() {
             // Note: this method is invoked on the main thread.
             // TODO
             if (call.method == "startCooking") {
-                result.success(startCooking())
+                result.success(startCooking(call.arguments))
             }
             else if (call.method == "tellAssistant") {
                 result.success(tellAssistant())
@@ -29,8 +29,8 @@ class MainActivity: FlutterActivity() {
         }
     }
 
-    private fun startCooking() : String {
-        return "We started cooking!"
+    private fun startCooking(recipeUrl: Any) : String {
+        return "We started cooking with a recipe at ${recipeUrl}"
     }
 
     private fun tellAssistant() : String {

@@ -17,10 +17,10 @@ class _RecentRecipesState extends State<RecentRecipes> {
 
   String _content = 'No methodchannel has been called yet';
 
-  Future<void> _startCooking() async {
+  Future<void> _startCooking(String recipeUrl) async {
     String content;
     try {
-      content = await platform.invokeMethod('startCooking');
+      content = await platform.invokeMethod('startCooking', recipeUrl);
     } on PlatformException catch (e) {
       content = "Failed to start cooking";
     }
@@ -51,7 +51,7 @@ class _RecentRecipesState extends State<RecentRecipes> {
           child:
             ElevatedButton(child: 
               Text("Call methodchannel"),
-              onPressed: _startCooking,
+              onPressed: () => _startCooking('url.com'),
               onLongPress: _tellAssistant,
             )
         ),
