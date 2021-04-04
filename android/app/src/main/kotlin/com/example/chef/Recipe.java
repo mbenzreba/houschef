@@ -13,11 +13,20 @@ public class Recipe {
     private String title;
     private String url;
     private String imgUrl;
+    private String html;
 
     private List<String> steps;
     private List<String> ingredients;
 
     private int cookTime;
+
+    public String getHtml() {
+        return html;
+    }
+
+    public void setHtml(String html) {
+        this.html = html;
+    }
 
     public String getTitle() {
         return title;
