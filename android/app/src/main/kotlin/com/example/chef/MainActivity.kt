@@ -5,6 +5,8 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
+import com.mbenzreba.RecipePatternFinder.RecipeWordTree
+
 class MainActivity: FlutterActivity() {
 
 
@@ -25,6 +27,8 @@ class MainActivity: FlutterActivity() {
      */
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+
+        // Configure ASSISTANT_CHANNEL
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, ASSISTANT_CHANNEL).setMethodCallHandler {
             call, result ->
             // Note: this method is invoked on the main thread.
@@ -39,6 +43,7 @@ class MainActivity: FlutterActivity() {
             }
         }
 
+        // Configure SEARCH_CHANNEL
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, SEARCH_CHANNEL).setMethodCallHandler {
             call, result ->
             // Note: this method is invoked on the main thread.
@@ -62,7 +67,7 @@ class MainActivity: FlutterActivity() {
         // Save these details to some SmartRecipe.kt
         // Inside SmartRecipe, do what you have to do...
         // Then, return the first step from SmartRecipe as a plain string!!
-        return "We started cooking with a recipe at ${recipeUrl}"
+        return "Want to visit a ${recipeUrl}"
     }
 
 
@@ -81,8 +86,26 @@ class MainActivity: FlutterActivity() {
     /***************************************************************************************************/
 
 
-    private fun search(terms: Any) : String {
-        return "Searching functionality currently unavailable"
+    private fun search(terms: Any) : HashMap<Int, HashMap<String, Any>> {
+        var outerHashMap : HashMap<Int, HashMap<String, Any>> = HashMap<Int, HashMap<String, Any>> ()
+
+        // Add the 1st inner hashmap
+        var innerHashMap : HashMap<String, Any> = HashMap<String, Any> ()
+        val bytes1 = "Youngster".toByteArray()
+        innerHashMap.put("name", "Youngster")
+        innerHashMap.put("bytes", bytes1)
+
+        outerHashMap.put(1, innerHashMap)
+
+        // Add the 1st inner hashmap 
+        var innerHashMap2 : HashMap<String, Any> = HashMap<String, Any> ()
+        val bytes2 = "Elder".toByteArray()
+        innerHashMap2.put("name", "Elder")
+        innerHashMap2.put("bytes", bytes2)
+
+        outerHashMap.put(2, innerHashMap2)
+
+        return outerHashMap
     }
 
     
