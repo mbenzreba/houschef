@@ -7,7 +7,9 @@ import './views/recipe_detail_screen.dart';
 import './views/categories_screen.dart';
 import './views/category_meals_screen.dart';
 import './views/tabs_screen.dart';
-import './models/recipes.dart';
+import './models/recipes.dart'; 
+import './views/recipe_step.dart';
+import './views/recipe_search_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -106,6 +108,10 @@ class _MyAppState extends State<MyApp> {
         RecipeDetailScreen.routeName: (ctx) => RecipeDetailScreen(_toggleFavorite, _isRecipeFavorite),
         FiltersScreen.routeName: (ctx) => FiltersScreen(_filters, _setFilters),
         AboutScreen.routeName: (ctx) => AboutScreen(),
+        RecipeStep.routeName: (ctx) => RecipeStep("Recipe"),
+        RecipeSearchScreen.routeName: (ctx) => RecipeSearchScreen(),
+        
+    
       },
 
       onGenerateRoute: (settings) {
