@@ -7,6 +7,12 @@ import io.flutter.plugin.common.MethodChannel
 
 import com.mbenzreba.RecipePatternFinder.RecipeWordTree
 
+import android.os.Handler
+import android.os.Looper
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+
 class MainActivity: FlutterActivity() {
 
 
@@ -86,9 +92,39 @@ class MainActivity: FlutterActivity() {
     /***************************************************************************************************/
 
 
-    private fun search(terms: Any) : HashMap<Int, HashMap<String, Any>> {
-        var outerHashMap : HashMap<Int, HashMap<String, Any>> = HashMap<Int, HashMap<String, Any>> ()
+    private fun search(terms: Any) : HashMap<Int, HashMap<String, String>> {
+        var outerHashMap : HashMap<Int, HashMap<String, String>> = HashMap<Int, HashMap<String, String>> ()
 
+        var scraper : Scraper = Scraper()
+        var scrapeData: List<Recipe>? = null
+
+        // NETWORKING ****
+
+        GlobalScope.launch(Dispatchers.IO) {
+            // Scrape
+            scrapeData  = scraper.search(terms.toString())
+
+            var count : Int = 0
+            for (r in scrapeData!!) {
+                var recipe : HashMap<String, String> = HashMap<String, String>()
+                recipe.put("title", r.title!!)
+                recipe.put("url", r.url!!)
+
+                outerHashMap.put(count, recipe)
+                count++
+            }
+
+            
+
+            
+        }
+        // NETWORKING ****
+
+        Thread.sleep(6000)
+
+        
+
+        /* 
         // Add the 1st inner hashmap
         var innerHashMap : HashMap<String, Any> = HashMap<String, Any> ()
         val bytes1 = "Youngster".toByteArray()
@@ -103,9 +139,10 @@ class MainActivity: FlutterActivity() {
         innerHashMap2.put("name", "Elder")
         innerHashMap2.put("bytes", bytes2)
 
-        outerHashMap.put(2, innerHashMap2)
+        outerHashMap.put(2, innerHashMap2) */
 
         return outerHashMap
+        
     }
 
     
