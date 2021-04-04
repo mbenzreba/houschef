@@ -9,6 +9,7 @@ import '../views/recent_recipe_screen.dart';
 import '../views/categories_screen.dart';
 import './favorites_screen.dart';
 
+import './recipe_search_screen.dart';
 
 
 
@@ -65,7 +66,14 @@ class _TabsScreenState extends State<TabsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_pages[_selectedPageIndex]['title']),
+        actions: <Widget>[
+        IconButton(icon: const Icon(Icons.search), onPressed: () {
+          Navigator.of(context).pushNamed(RecipeSearchScreen.routeName);
+        },),
+      ],
       ),
+      
+    
 
       drawer: MainDrawer(),
 
