@@ -39,12 +39,36 @@ class Scraper {
         return recipes
     }
 
+
+
     fun getDetails(r: Recipe): Recipe {
-        try {
-            r.html = Jsoup.connect(r.url).get().html()
-        } catch (e: Exception) {
+
+        var doc: Document? = null
+
+        doc = try {
+            Jsoup.connect(r.url).get()
+        } catch (e: IOException) {
             e.printStackTrace()
+            return r
         }
+
+        var steps = doc?.select("p")
+        var ingredients = doc?.select("span.ingredients-item-name")
+
+        for(i in steps!!){
+
+            r.steps?.add(i.text())
+
+            //Log.d("s found", i.text())
+        }
+
+        for(i in ingredients!!){
+
+            r.ingredients?.add(i.text())
+
+            Log.d("i found", i.text())
+        }
+
         return r
     }
 }
