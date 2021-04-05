@@ -103,11 +103,11 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
                     ),
                     child: Text(
                       // ingredients go here
-                      incomingRecipe[index]['ingredients'],
+                      incomingRecipe['ingredients'][index],
                     ),
                   ),
                 ),
-                itemCount: incomingRecipe.length,
+                itemCount: incomingRecipe['ingredients'].length,
               ),
             ),
             buildSectionTitle(context, 'Steps'),
@@ -120,13 +120,13 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
                         child: Text('# ${index + 1}'),
                       ),
                       title: Text(
-                        incomingRecipe[index]['steps'],
+                        incomingRecipe['steps'][index],
                       ),
                     ),
                     Divider(),
                   ],
                 ),
-                itemCount: incomingRecipe.length,
+                itemCount: incomingRecipe['steps'].length,
               ),
             ),
 
