@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 // Import for UintList
 import 'dart:typed_data';
 
-
+import './test_recipe_detail_screen.dart';
 
 
 
@@ -28,7 +28,14 @@ class _RecipeSearcScreenState extends State<RecipeSearchScreen> {
   static const platform = const MethodChannel("com.example.chef/search");
   String _content = 'No methodchannel has been called yet';
 
+  Map<dynamic, dynamic> recipeMap = new Map();
+  var urls = [];
+
   Future<void> _search(terms) async {
+
+    // This is the important one
+    // content[0]['title'] to access the title of the recipe 
+    // content[0]['url'] to get the url  
     Map<dynamic, dynamic> content;
     String name = "EMPTY_NAME";
     String bytes;
@@ -58,8 +65,51 @@ class _RecipeSearcScreenState extends State<RecipeSearchScreen> {
     //}
 
     setState(() {
-      _content = actualContent;
+      //_content = actualContent;
+      recipeMap = content;
     });
+  }
+
+
+  ListView createRecipeWidgets() {
+    int x = 0;
+    
+
+    recipeMap.forEach((key, value) => urls.add(value['url']));
+    print(urls);
+    if (recipeMap != null) {return ListView.builder(
+      shrinkWrap: true,
+        itemCount: recipeMap.length,
+        itemBuilder: (ctx, index) => GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (ctx) => TestRecipeScreen(urls[index])));
+                  },
+                  child: Card(
+                    color: Colors.white,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      child: Text(
+                        recipeMap[index]['title'],
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+        ),
+      );
+    } else {
+      return ListView(
+        children: <Widget>[
+         Container(
+           height: 50,
+           color: Colors.amber[600],
+           child: const Center(child: Text('Entry A')),
+         ),
+        ],
+      );
+    }
   }
 
   @override
@@ -78,9 +128,10 @@ class _RecipeSearcScreenState extends State<RecipeSearchScreen> {
                 TextField(
                   onSubmitted: _search,
                   decoration: InputDecoration(labelText: 'Enter recipe name'), 
-                  textInputAction: TextInputAction.next,
+                  textInputAction: TextInputAction.done,
                 ),
-                Text(_content)
+                //Text(_content)
+                createRecipeWidgets(),
               ],
             ),
           ),

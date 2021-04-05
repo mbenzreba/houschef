@@ -1,3 +1,4 @@
+import './views/test_recipe_detail_screen.dart';
 import 'package:flutter/material.dart';
 
 import './dummy_data.dart';
@@ -110,7 +111,7 @@ class _MyAppState extends State<MyApp> {
         AboutScreen.routeName: (ctx) => AboutScreen(),
         RecipeStep.routeName: (ctx) => RecipeStep("Recipe"),
         RecipeSearchScreen.routeName: (ctx) => RecipeSearchScreen(),
-        
+        //TestRecipeScreen.routeName: (ctx) => TestRecipeScreen(),
     
       },
 
