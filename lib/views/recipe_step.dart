@@ -34,7 +34,7 @@ class _RecipeStepState extends State<RecipeStep> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Houschef', style: Theme.of(context).textTheme.title,),
+        title: Text('Houschef', style: Theme.of(context).textTheme.headline6,),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -45,18 +45,18 @@ class _RecipeStepState extends State<RecipeStep> {
           padding: EdgeInsets.all(20),
             child: Text(
             'Recipe step goes here', 
-              style: Theme.of(context).textTheme.title,
+              style: Theme.of(context).textTheme.headline6,
             ),),
 
-            RaisedButton(
+            ElevatedButton(
               child: Text('Previous Step'), 
               onPressed: null),
 
-            RaisedButton(
+            ElevatedButton(
             child: Text('Next Step'),
             onPressed: null,),
 
-            RaisedButton(
+            ElevatedButton(
               child: Text('Cancel'),
               onPressed: null),  
       ],

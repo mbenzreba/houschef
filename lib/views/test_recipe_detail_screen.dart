@@ -1,12 +1,10 @@
 
 import 'package:flutter/material.dart';
-// Import for MethodChannel
-import 'package:flutter/services.dart';
-
-// Import for UintList
-import 'dart:typed_data';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 
+
+import '../views/recipe_step.dart';
 
 
 
@@ -14,174 +12,158 @@ import 'dart:typed_data';
 
 class TestRecipeScreen extends StatefulWidget {
 
-  String url;
-  TestRecipeScreen(this.url);
+  String title;
+  
+  Map<dynamic,dynamic> incomingRecipe;
+
+  TestRecipeScreen({this.title, this.incomingRecipe});
 
   static const routeName = '/test-recipe';
 
   @override
-  _TestRecipeScreenState createState() => _TestRecipeScreenState(url);
+  _TestRecipeScreenState createState() => _TestRecipeScreenState(title, incomingRecipe);
 }
 
 class _TestRecipeScreenState extends State<TestRecipeScreen> {
 
-  String url;
-  _TestRecipeScreenState(this.url);
+  
+  String title;
+  Map<dynamic,dynamic> incomingRecipe;
+  _TestRecipeScreenState(this.title, this.incomingRecipe);
 
-  static const platform = const MethodChannel("com.example.chef/search");
+  //var steps =[];
 
-  Map<dynamic, dynamic> selectedRecipe = new Map();
-  String _content = "NO CONTENT";
-
-  Future<void> _search(url) async {
-
-    // This is the important one
-    // content[0]['title'] to access the title of the recipe 
-    // content[0]['url'] to get the url  
-    Map<dynamic, dynamic> content;
-    String name = "EMPTY_NAME";
-    String bytes;
-    Uint8List realBytes;
-
-    String title;
-    
-    String actualContent = "Start of method";
-    try {
-      actualContent = "Entered try";
-      content = await platform.invokeMethod('searchFullDetails', url);
-      actualContent = "Returned from platform.invoke";
-      actualContent = content.toString();
-      //actualContent = content[0]["title"];
-      //actualContent = "anotha one";
-      //Map<dynamic, dynamic> innerMap = content[1] as Map<dynamic, dynamic>;
-      //actualContent = content.toString();
-      //name = innerMap["name"].toString();
-      //actualContent = name;
-      // bytes = new String.fromCharCodes(innerMap["bytes"]);
-      //realBytes = innerMap["bytes"];
-      //actualContent = realBytes.toString();
-    } on PlatformException catch (e) {
-    } 
-    //on NoSuchMethodError catch (e) {
-
-    //}
-
-    setState(() {
-      //_content = actualContent;
-      _content = actualContent;
-    });
+  Widget buildContainer(Widget child) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      margin: EdgeInsets.all(10),
+      padding: EdgeInsets.all(10),
+      // remember to add Media Query so i can size this to any phone
+      height: 200,
+      width: 300,
+      child: child,
+    );
   }
 
 
 
-  @override
-  Widget build(BuildContext context) {
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("name"),
-      ),
-      body: Container(
-      child: Center(
-        child: FlatButton(
-          onPressed: () => _search(url),
-          child: Text(_content),
-          ),
-        ),
+    Widget buildSectionTitle(BuildContext context, String text) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 10),
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.title,
       ),
     );
+  }
 
-    
+
+  @override
+  Widget build(BuildContext context) {
+    //incomingRecipe.forEach((key, value) => steps.add(value['steps']));
+
+    // test scaffold
     // return Scaffold(
     //   appBar: AppBar(
     //     title: Text(
-    //       '${selectedRecipe.title}',
+    //       title,
     //     ),
     //   ),
-    //   body: SingleChildScrollView(
-    //     child: Column(
-    //       crossAxisAlignment: CrossAxisAlignment.start,
-    //       children: <Widget>[
-    //         Container(
-    //           height: 300,
-    //           width: double.infinity,
-    //           child: Image.network(
-    //             selectedRecipe.imageURL,
-    //             fit: BoxFit.cover,
-    //           ),
-    //         ),
-    //         buildSectionTitle(context, 'Ingredients'),
-    //         buildContainer(
-    //           ListView.builder(
-    //             itemBuilder: (ctx, index) => Card(
-    //               color: Theme.of(context).accentColor,
-    //               child: Padding(
-    //                 padding: EdgeInsets.symmetric(
-    //                   horizontal: 10,
-    //                   vertical: 5,
-    //                 ),
-    //                 child: Text(
-    //                   selectedRecipe.ingredients[index],
-    //                 ),
-    //               ),
-    //             ),
-    //             itemCount: selectedRecipe.ingredients.length,
-    //           ),
-    //         ),
-    //         buildSectionTitle(context, 'Steps'),
-    //         buildContainer(
-    //           ListView.builder(
-    //             itemBuilder: (ctx, index) => Column(
-    //               children: [
-    //                 ListTile(
-    //                   leading: CircleAvatar(
-    //                     child: Text('# ${index + 1}'),
-    //                   ),
-    //                   title: Text(
-    //                     selectedRecipe.steps[index],
-    //                   ),
-    //                 ),
-    //                 Divider(),
-    //               ],
-    //             ),
-    //             itemCount: selectedRecipe.steps.length,
-    //           ),
-    //         ),
-
-    //       ],
-    //     ),
-    //   ),
-
-
-    //   floatingActionButton: SpeedDial(
-    //     animatedIcon: AnimatedIcons.menu_close,
-    //     children: [
-
-    //     SpeedDialChild(
-    //       child: Icon(Icons.navigation),
-    //       label: "Start Recipe",
-    //       backgroundColor: Colors.green,
-    //       onTap: () {
-    //        Navigator.of(context).pushNamed(
-    //          RecipeStep.routeName
-    //        );
-    //       }
-    //     ),
-
-    //     SpeedDialChild(
-    //       child: Icon(isFavorite(recipeId) ? Icons.favorite : Icons.favorite_border,),
-    //       label: "Favourite",
-    //       backgroundColor: Colors.red,
-    //       onTap: () => toggleFavorite(recipeId),
-    //     ),
-
-    //   ],),
-    //   // floatingActionButton: FloatingActionButton(
-    //   //   child: Icon(
-    //   //     isFavorite(recipeId) ? Icons.favorite : Icons.favorite_border,
-    //   //   ),
-    //   //   onPressed: () => toggleFavorite(recipeId),
-    //   // ),
+    //   body: Center(child: Text('We Made IT!'),),
     // );
+    // 
+    
+    print(incomingRecipe['steps']);
+    print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
+    print(incomingRecipe['ingredients']);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          title,
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            buildSectionTitle(context, 'Ingredients'),
+            buildContainer(
+              ListView.builder(
+                itemBuilder: (ctx, index) => Card(
+                  color: Theme.of(context).accentColor,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    child: Text(
+                      // ingredients go here
+                      incomingRecipe[index]['ingredients'],
+                    ),
+                  ),
+                ),
+                itemCount: incomingRecipe.length,
+              ),
+            ),
+            buildSectionTitle(context, 'Steps'),
+            buildContainer(
+              ListView.builder(
+                itemBuilder: (ctx, index) => Column(
+                  children: [
+                    ListTile(
+                      leading: CircleAvatar(
+                        child: Text('# ${index + 1}'),
+                      ),
+                      title: Text(
+                        incomingRecipe[index]['steps'],
+                      ),
+                    ),
+                    Divider(),
+                  ],
+                ),
+                itemCount: incomingRecipe.length,
+              ),
+            ),
+
+          ],
+        ),
+      ),
+
+
+      floatingActionButton: SpeedDial(
+        animatedIcon: AnimatedIcons.menu_close,
+        children: [
+
+        SpeedDialChild(
+          child: Icon(Icons.navigation),
+          label: "Start Recipe",
+          backgroundColor: Colors.green,
+          onTap: () {
+           Navigator.of(context).pushNamed(
+             RecipeStep.routeName
+           );
+          }
+        ),
+
+        // SpeedDialChild(
+        //   child: Icon(isFavorite(recipeId) ? Icons.favorite : Icons.favorite_border,),
+        //   label: "Favourite",
+        //   backgroundColor: Colors.red,
+        //   onTap: () => toggleFavorite(recipeId),
+        // ),
+
+      ],),
+      // floatingActionButton: FloatingActionButton(
+      //   child: Icon(
+      //     isFavorite(recipeId) ? Icons.favorite : Icons.favorite_border,
+      //   ),
+      //   onPressed: () => toggleFavorite(recipeId),
+      // ),
+    );
   }
 }

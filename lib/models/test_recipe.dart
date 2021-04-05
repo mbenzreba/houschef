@@ -12,6 +12,8 @@ import 'package:flutter/foundation.dart';
 // }
 // 
 
+
+
 class Recipe {
   final String title;
   final String url;
@@ -19,8 +21,6 @@ class Recipe {
   final String html;
   final List<String> ingredients;
   final List<String> steps;
-
-
 
   Recipe({this.title, this.url, this.imageUrl, this.html, this.ingredients, this.steps});
 }
