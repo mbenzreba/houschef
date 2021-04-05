@@ -15,6 +15,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers
 
+import android.util.Log
+
 class MainActivity: FlutterActivity() {
 
     var currentlyCooking: Recipe = Recipe()
@@ -191,13 +193,28 @@ class MainActivity: FlutterActivity() {
         if (url is String) {
             r.url = url
         }
+
+        r.steps = mutableListOf()
+        r.ingredients = mutableListOf()
         
-
+        
         var scraper: Scraper = Scraper()
-        r = scraper.getDetails(r)
 
+        GlobalScope.launch(Dispatchers.IO) {
+            r = scraper.getDetails(r)
+            
+
+            
+        }
+        Log.d("DEBUG", "Got the details fine " + r)
+        Thread.sleep(8000)
+
+        Log.d("DEBUG", "R.steps is " + r.steps)
+        Log.d("DEBUG", "R.ingredients is " + r.ingredients)
         details.put("steps", r.steps!!)
         details.put("ingredients", r.ingredients!!)
+
+        
         
         return details
     }

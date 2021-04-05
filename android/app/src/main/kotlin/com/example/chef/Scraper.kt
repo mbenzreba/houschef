@@ -55,18 +55,23 @@ class Scraper {
         var steps = doc?.select("p")
         var ingredients = doc?.select("span.ingredients-item-name")
 
+        var index: Int = 0
         for(i in steps!!){
 
             r.steps?.add(i.text())
 
-            //Log.d("s found", i.text())
+            Log.d("s found", "Added to steps: " + r.steps?.get(index))
+            index++
         }
 
+
+        index = 0
         for(i in ingredients!!){
 
             r.ingredients?.add(i.text())
 
-            Log.d("i found", i.text())
+            Log.d("i found", "Added to ingredients: " + r.ingredients?.get(index))
+            index++
         }
 
         return r

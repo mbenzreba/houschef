@@ -14,20 +14,24 @@ import 'dart:typed_data';
 
 class TestRecipeScreen extends StatefulWidget {
 
-  final String url;
+  String url;
   TestRecipeScreen(this.url);
 
   static const routeName = '/test-recipe';
 
   @override
-  _TestRecipeScreenState createState() => _TestRecipeScreenState();
+  _TestRecipeScreenState createState() => _TestRecipeScreenState(url);
 }
 
 class _TestRecipeScreenState extends State<TestRecipeScreen> {
 
+  String url;
+  _TestRecipeScreenState(this.url);
+
   static const platform = const MethodChannel("com.example.chef/search");
 
   Map<dynamic, dynamic> selectedRecipe = new Map();
+  String _content = "NO CONTENT";
 
   Future<void> _search(url) async {
 
@@ -64,7 +68,7 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
 
     setState(() {
       //_content = actualContent;
-      selectedRecipe = content;
+      _content = actualContent;
     });
   }
 
@@ -73,7 +77,19 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
   @override
   Widget build(BuildContext context) {
 
-    return Container(child: Center(child: Text('Child'),),);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("name"),
+      ),
+      body: Container(
+      child: Center(
+        child: FlatButton(
+          onPressed: () => _search(url),
+          child: Text(_content),
+          ),
+        ),
+      ),
+    );
 
     
     // return Scaffold(
