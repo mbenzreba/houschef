@@ -23,15 +23,23 @@ class RecipeSearchScreen extends StatefulWidget {
   _RecipeSearcScreenState createState() => _RecipeSearcScreenState();
 }
 
+
+
 class _RecipeSearcScreenState extends State<RecipeSearchScreen> {
 
   static const platform = const MethodChannel("com.example.chef/search");
+
+  static const platform_Two = const MethodChannel("com.example.chef/search");
+
+  bool titleOrSteps = false;
+
   String _content = 'No methodchannel has been called yet';
 
   Map<dynamic, dynamic> recipeMap = new Map();
+  Map<dynamic, dynamic> selectedRecipe = new Map();
   var urls = [];
 
-  Future<void> _search(terms) async {
+  Future<void> _search(value) async {
 
     // This is the important one
     // content[0]['title'] to access the title of the recipe 
@@ -45,19 +53,20 @@ class _RecipeSearcScreenState extends State<RecipeSearchScreen> {
     String url;
     String actualContent = "Start of method";
     try {
-      actualContent = "Entered try";
-      content = await platform.invokeMethod('search', terms);
-      actualContent = "Returned from platform.invoke";
-      actualContent = content.toString();
-      //actualContent = content[0]["title"];
-      //actualContent = "anotha one";
-      //Map<dynamic, dynamic> innerMap = content[1] as Map<dynamic, dynamic>;
-      //actualContent = content.toString();
-      //name = innerMap["name"].toString();
-      //actualContent = name;
-      // bytes = new String.fromCharCodes(innerMap["bytes"]);
-      //realBytes = innerMap["bytes"];
-      //actualContent = realBytes.toString();
+      if (titleOrSteps == false) {
+        actualContent = "Entered try";
+        content = await platform.invokeMethod('search', value);
+        actualContent = "Returned from platform.invoke";
+        actualContent = content.toString();
+        
+      }
+      else {
+        actualContent = "Entered try";
+        content = await platform_Two.invokeMethod('searchFullDetails', value);
+        actualContent = "Returned from platform.invoke";
+        actualContent = content.toString();
+      }
+      
     } on PlatformException catch (e) {
     } 
     //on NoSuchMethodError catch (e) {
@@ -66,13 +75,17 @@ class _RecipeSearcScreenState extends State<RecipeSearchScreen> {
 
     setState(() {
       //_content = actualContent;
-      recipeMap = content;
+      if (titleOrSteps == false) {
+        recipeMap = content;
+      } else {
+        selectedRecipe = content;
+      }
+       
     });
   }
 
-
   ListView createRecipeWidgets() {
-    int x = 0;
+    
     
 
     recipeMap.forEach((key, value) => urls.add(value['url']));
@@ -82,7 +95,12 @@ class _RecipeSearcScreenState extends State<RecipeSearchScreen> {
         itemCount: recipeMap.length,
         itemBuilder: (ctx, index) => GestureDetector(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (ctx) => TestRecipeScreen(urls[index])));
+                    titleOrSteps = true;
+                    // setState(() {
+                    //   _search(urls[index]);
+                    // });
+                    _search(urls[index]);
+                    Navigator.push(context, MaterialPageRoute(builder: (ctx) => TestRecipeScreen(title: recipeMap[index]['title'], incomingRecipe: selectedRecipe)));
                   },
                   child: Card(
                     color: Colors.white,
@@ -130,7 +148,6 @@ class _RecipeSearcScreenState extends State<RecipeSearchScreen> {
                   decoration: InputDecoration(labelText: 'Enter recipe name'), 
                   textInputAction: TextInputAction.done,
                 ),
-                //Text(_content)
                 createRecipeWidgets(),
               ],
             ),
