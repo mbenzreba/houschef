@@ -13,3 +13,4 @@ key.properties
 
 # Allow JAR to be committed
 !recipe-pattern-finder-*.jar
+!opennlp-tools-*.jar
