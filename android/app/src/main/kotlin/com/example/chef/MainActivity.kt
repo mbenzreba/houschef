@@ -6,6 +6,8 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 import com.mbenzreba.RecipePatternFinder.RecipeWordTree
+import com.mbenzreba.RecipePatternFinder.PreParser
+import com.mbenzreba.RecipePatternFinder.RecipeWordTreeArborist
 
 import android.os.Handler
 import android.os.Looper
@@ -14,6 +16,8 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers
 
 class MainActivity: FlutterActivity() {
+
+    var currentlyCooking: Recipe = Recipe()
 
 
     /***************************************************************************************************/
@@ -56,6 +60,9 @@ class MainActivity: FlutterActivity() {
             if (call.method == "search") {
                 result.success(search(call.arguments))
             }
+            else if (call.method == "searchFullDetails") {
+                result.success(searchFullDetails(call.arguments))
+            }
             else {
                 result.notImplemented()
             }
@@ -67,13 +74,44 @@ class MainActivity: FlutterActivity() {
     /**
      * 
      */
-    private fun startCooking(recipeUrl: Any) : String {
+    private fun startCooking(args: Any) : String {
         // TODO: Write the actual function
         // Scrape the recipe from the url and get the details
         // Save these details to some SmartRecipe.kt
         // Inside SmartRecipe, do what you have to do...
         // Then, return the first step from SmartRecipe as a plain string!!
-        return "Want to visit a ${recipeUrl}"
+        currentlyCooking = Recipe()
+        if (args is String) {
+            currentlyCooking.url = args
+            currentlyCooking.title = args
+        }
+        
+
+        var scraper: Scraper = Scraper()
+        currentlyCooking = scraper.getDetails(currentlyCooking)
+
+        // Use Recipe to populate the SmartSteps it keeps track of
+
+        // OpenNLP 
+        var pp: PreParser = PreParser()
+        var rawRecipe: String = ""
+
+        // Construct entire recipe as one whole string
+        for (step in currentlyCooking.steps!!) {
+            rawRecipe = rawRecipe + " " + step
+        }
+
+        var parses: MutableList<String> = pp.rawToParses(rawRecipe)
+        for (parse in parses) {
+            // Add it to the recipe (r) as a SmartStep
+            var ss: SmartStep = SmartStep()
+            ss.tree = RecipeWordTreeArborist.get().createTree_SPH(parse)
+            currentlyCooking.smartSteps?.add(ss!!)
+        }
+
+
+
+        return currentlyCooking.smartSteps?.get(0)!!.tree.getSentence()
     }
 
 
@@ -144,6 +182,26 @@ class MainActivity: FlutterActivity() {
         return outerHashMap
         
     }
+
+
+    private fun searchFullDetails(url: Any) : HashMap<String, Any> {
+        var details : HashMap<String, Any> = HashMap<String, Any> ()
+
+        var r: Recipe = Recipe()
+        if (url is String) {
+            r.url = url
+        }
+        
+
+        var scraper: Scraper = Scraper()
+        r = scraper.getDetails(r)
+
+        details.put("steps", r.steps!!)
+        details.put("ingredients", r.ingredients!!)
+        
+        return details
+    }
+
 
     
 

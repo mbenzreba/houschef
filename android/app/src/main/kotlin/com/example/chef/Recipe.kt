@@ -9,4 +9,7 @@ class Recipe {
     var steps: MutableList<String>? = null
     var ingredients: MutableList<String>? = null
     var cookTime = 0
+
+    // For using the interactive assistant
+    var smartSteps: MutableList<SmartStep>? = null
 }
