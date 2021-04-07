@@ -90,6 +90,8 @@ class MainActivity: FlutterActivity() {
         
 
         var scraper: Scraper = Scraper()
+        currentlyCooking.steps = mutableListOf()
+        currentlyCooking.ingredients = mutableListOf()
         currentlyCooking = scraper.getDetails(currentlyCooking)
 
         // Use Recipe to populate the SmartSteps it keeps track of
@@ -107,7 +109,7 @@ class MainActivity: FlutterActivity() {
         for (parse in parses) {
             // Add it to the recipe (r) as a SmartStep
             var ss: SmartStep = SmartStep()
-            ss.tree = RecipeWordTreeArborist.get().createTree_SPH(parse)
+            ss.tree = RecipeWordTreeArborist.get().createTree(parse)
             currentlyCooking.smartSteps?.add(ss!!)
         }
 
