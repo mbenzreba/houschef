@@ -51,7 +51,7 @@ class Houschef : Activity {
     // Description: a constructor that initializes the Houschef object
     // Parameters:
     // Return:      N/A
-    constructor(context: Context, activity: Activity, recipeInstructions: List<String>, recipeIngredients: List<String>, recipe: Recipe) {
+    constructor(context: Context, activity: Activity, recipeInstructions: List<String>, recipeIngredients: List<String>, recipe: Recipe, stepHolder: StepHolder) {
         currentContext = context
         currentActivity = activity
         instructions = recipeInstructions
@@ -60,6 +60,7 @@ class Houschef : Activity {
 
         // REFACTOR
         this.recipe = recipe
+        this.stepHolder = stepHolder
 
         tts = TextToSpeech(context, TextToSpeech.OnInitListener { status ->
             if (status == TextToSpeech.SUCCESS) {
@@ -169,7 +170,7 @@ class Houschef : Activity {
             // else, the step counter of the recipe is incremented
             else {
                 // if the current step has not exceeded the amount of steps in the recipe, it will be incremented
-                if (currentStep != instructions.size) {
+                if (currentStep != recipe.smartSteps!!.size) {
                     currentStep += 1
                 }
             }
@@ -278,11 +279,23 @@ class Houschef : Activity {
             }
             // if all ingredients for a step is requested, then it will be read to the user
             else if (isAllIngredientRequest) {
-                numOfIngredientsInStep = 3
+                
 
+                var ingredientsInStep: MutableList<String> = this.recipe.smartSteps!!.get(allIngredientsStep).tree.getFulfillsForTarget("ingredient")
+                numOfIngredientsInStep = ingredientsInStep.size
+                var ingredientNumber: Int = 1
+                for (ingredient in ingredientsInStep) {
+                    tts.speak(ingredient, TextToSpeech.QUEUE_ADD, null, "All Ingredients " + ingredientNumber)
+                    ingredientNumber += 1
+                }
+
+                /* 
                 tts.speak("Here's your first ingredient.", TextToSpeech.QUEUE_ADD, null, "All Ingredients " + 1)
                 tts.speak("Here's your second ingredient.", TextToSpeech.QUEUE_ADD, null, "All Ingredients " + 2)
                 tts.speak("Here's your third ingredient.", TextToSpeech.QUEUE_ADD, null, "All Ingredients " + 3)
+                */
+
+                // TODO: Alter stepHolder to highlight the ingredients in the current step
 
                 isAllIngredientRequest = false
             }
@@ -303,6 +316,7 @@ class Houschef : Activity {
                 else {
                     // tts.speak(instructions[currentStep], TextToSpeech.QUEUE_FLUSH, null, "step")
                     tts.speak(recipe.smartSteps!!.get(currentStep).tree.getSentence(), TextToSpeech.QUEUE_FLUSH, null, "step")
+                    this.stepHolder.stepContents = recipe.smartSteps!!.get(currentStep).tree.getSentence()
                 }
             }
         }

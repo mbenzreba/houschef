@@ -27,6 +27,8 @@ class MainActivity: FlutterActivity() {
     var stepContent: String = ""
     var loader: PreParser = PreParser(false)
 
+    var stepHolder: StepHolder = StepHolder()
+
 
     /***************************************************************************************************/
     /******************************* INTERACTIVE VOICE ASSISTANT CHANNEL *******************************/
@@ -61,6 +63,9 @@ class MainActivity: FlutterActivity() {
             }
             else if (call.method == "startCooking_SPH") {
                 result.success(tellAssistant())
+            }
+            else if (call.method == "getLatestStep") {
+                result.success(getLatestStep())
             }
             else {
                 result.notImplemented()
@@ -99,11 +104,21 @@ class MainActivity: FlutterActivity() {
     }
 
 
+    private fun getLatestStep() : HashMap<String, Any> {
+        // Now return the map
+        var map: HashMap<String, Any> = HashMap<String, Any>()
+        map.put("step", stepHolder.stepContents)
+        map.put("highlights", stepHolder.stepHighlights)
+
+        return map
+    }
+
+
 
     /**
      * 
      */
-    private fun startCooking(args: Any) : String {
+    private fun startCooking(args: Any) : HashMap<String, Any> {
         // TODO: Write the actual function
         // Scrape the recipe from the url and get the details
         // Save these details to some SmartRecipe.kt
@@ -157,7 +172,14 @@ class MainActivity: FlutterActivity() {
 
 
         currentStep = 0
-        return currentlyCooking.smartSteps!!.get(0).tree.getSentence()
+
+        // Now return the map
+        var map: HashMap<String, Any> = HashMap<String, Any>()
+        stepHolder.stepContents = currentlyCooking.smartSteps!!.get(0).tree.getSentence()
+        map.put("step", stepHolder.stepContents)
+        map.put("highlights", stepHolder.stepHighlights)
+
+        return map
     }
 
 
@@ -165,8 +187,8 @@ class MainActivity: FlutterActivity() {
     /**
      * 
      */
-    private fun tellAssistant() : String? {
-        houschef = Houschef(this, this, currentlyCooking.steps!!, currentlyCooking.ingredients!!, currentlyCooking)
+    private fun tellAssistant() : HashMap<String, Any> {
+        houschef = Houschef(this, this, currentlyCooking.steps!!, currentlyCooking.ingredients!!, currentlyCooking, this.stepHolder)
         houschef!!.listenForRequest(100)
         currentStep++
         
@@ -174,9 +196,16 @@ class MainActivity: FlutterActivity() {
             stepContent = "Ask Houschef to start cooking!"
         }
         else {
-            stepContent = houschef!!.instructions[houschef!!.currentStep]
+            //stepContent = houschef!!.instructions[houschef!!.currentStep]
+            stepContent = houschef!!.recipe.smartSteps!!.get(houschef!!.currentStep).tree.getSentence()
         }
-        return stepContent
+
+        // Now return the map
+        var map: HashMap<String, Any> = HashMap<String, Any>()
+        map.put("step", stepHolder.stepContents)
+        map.put("highlights", stepHolder.stepHighlights)
+
+        return map
     }
 
 
