@@ -166,7 +166,7 @@ class MainActivity: FlutterActivity() {
      * 
      */
     private fun tellAssistant() : String? {
-        houschef = Houschef(this, this, currentlyCooking.steps!!, currentlyCooking.ingredients!!)
+        houschef = Houschef(this, this, currentlyCooking.steps!!, currentlyCooking.ingredients!!, currentlyCooking)
         houschef!!.listenForRequest(100)
         currentStep++
         

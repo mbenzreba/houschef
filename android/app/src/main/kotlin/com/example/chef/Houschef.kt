@@ -32,17 +32,24 @@ class Houschef : Activity {
     private val kRequestCodeSpeechInput = 100
     private val kRequestCodeConfirmation = 101
 
+    // Recipe
+    var recipe:Recipe = Recipe()
+    var stepHolder:StepHolder = StepHolder()
+
 
 
     // Function:    constructor()
     // Description: a constructor that initializes the Houschef object
     // Parameters:
     // Return:      N/A
-    constructor(context: Context, activity: Activity, recipeInstructions: List<String>, recipeIngredients: List<String>) {
+    constructor(context: Context, activity: Activity, recipeInstructions: List<String>, recipeIngredients: List<String>, recipe: Recipe) {
         currentContext = context
         currentActivity = activity
         instructions = recipeInstructions
         ingredients = recipeIngredients
+
+        // REFACTOR
+        this.recipe = recipe
 
         tts = TextToSpeech(context, TextToSpeech.OnInitListener { status ->
             if (status == TextToSpeech.SUCCESS) {
@@ -220,7 +227,7 @@ class Houschef : Activity {
     private fun processRequest() {
         // if the current step has exceeded the max index of the instructions list, the assistant indicates the
         // recipe has been finished
-        if (currentStep == instructions.size) {
+        if (currentStep == recipe.steps!!.size) {
             tts.speak("The recipe has been completed. To go back to the recipe say Previous or request a specific step or ingredient",
                 TextToSpeech.QUEUE_FLUSH, null, "Finished")
         }
@@ -243,17 +250,19 @@ class Houschef : Activity {
             else {
                 // if the recipe has not finished listing ingredients, an ingredient is read to the user
                 if (!finishedIngredients) {
-                    tts.speak(ingredients[ingredientStep], TextToSpeech.QUEUE_FLUSH, null, "ingredient")
+                    // tts.speak(ingredients[ingredientStep], TextToSpeech.QUEUE_FLUSH, null, "ingredient")
+                    tts.speak(recipe.ingredients!!.get(ingredientStep), TextToSpeech.QUEUE_FLUSH, null, "ingredient")
 
                     // if the current ingredient step is the and the last request made was for a previous step,
                     // finishedIngredients is set to true
-                    if (ingredientStep == ingredients.size - 1 && !isPrevRequest) {
+                    if (ingredientStep == recipe.ingredients!!.size - 1 && !isPrevRequest) {
                         finishedIngredients = true
                     }
                 }
                 // else, a step is read to the user
                 else {
-                    tts.speak(instructions[currentStep], TextToSpeech.QUEUE_FLUSH, null, "step")
+                    // tts.speak(instructions[currentStep], TextToSpeech.QUEUE_FLUSH, null, "step")
+                    tts.speak(recipe.smartSteps!!.get(currentStep).tree.getSentence(), TextToSpeech.QUEUE_FLUSH, null, "step")
                 }
             }
         }
@@ -284,7 +293,7 @@ class Houschef : Activity {
 
                 // if the requested step is greater than the amount of steps in the recipe,
                 // an exception is thrown
-                if (newStep > instructions.size) {
+                if (newStep > recipe.steps.size) {
                     throw Exception("Invalid Step")
                 }
 
@@ -298,7 +307,7 @@ class Houschef : Activity {
         // if the request is recognizable, the ingredient/step number will be altered to the requested number
         if (!unrecognizedRequest) {
             if (isIngredientRequest) {
-                if (newStep <= ingredients.size && newStep > 0) {
+                if (newStep <= recipe.ingredients!!.size && newStep > 0) {
                     ingredientStep = newStep - 1
                     finishedIngredients = false
                     currentStep = -1
@@ -307,10 +316,10 @@ class Houschef : Activity {
                 }
             }
             else {
-                if (newStep <= instructions.size && newStep > 0) {
+                if (newStep <= recipe.smartSteps!!.size && newStep > 0) {
                     currentStep = newStep - 1
                     finishedIngredients = true
-                    ingredientStep = ingredients.size - 1
+                    ingredientStep = recipe.ingredients!!.size - 1
                 } else {
                     requestOutOfBounds = true;
                 }
