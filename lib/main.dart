@@ -15,6 +15,9 @@ import './views/recipe_search_screen.dart';
 // Import for MethodChannel
 import 'package:flutter/services.dart';
 
+import './dal/RecipeDAL.dart';
+import './dal/RecipeDataModel.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -29,6 +32,8 @@ class _MyAppState extends State<MyApp> {
 
   static const platform = const MethodChannel("com.example.chef/load");
 
+  RecipeDAL dal;
+
   Future<void> _loadModels() async {
     bool areThreadsLaunched;
     try {
@@ -41,6 +46,8 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     _loadModels();
+    dal = new RecipeDAL(); 
+    dal.CreateDatabase();
   }
 
 
