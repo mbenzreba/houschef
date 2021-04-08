@@ -78,8 +78,8 @@ class Houschef : Activity {
                 if (utteranceId == "Cancel") {
                     listenForRequest(kRequestCodeConfirmation)
                 }
-                else if (utteranceId == "Out of Bounds" || utteranceId == "ingredient" || utteranceId == "step" || utteranceId == "Unrecognized"
-                    || utteranceId == "All Ingredients " + numOfIngredientsInStep || utteranceId == "Finished") {
+                else if (utteranceId == "Out of Bounds" || utteranceId == "ingredient" || utteranceId == "step" || utteranceId == "Unrecognized" || utteranceId == "All Ingredients " + numOfIngredientsInStep 
+                || utteranceId == "Finished" || utteranceId == "No Ingredients") {
                     listenForRequest(kRequestCodeSpeechInput)
                 }
 
@@ -284,9 +284,15 @@ class Houschef : Activity {
                 var ingredientsInStep: MutableList<String> = this.recipe.smartSteps!!.get(allIngredientsStep).tree.getFulfillsForTarget("ingredient")
                 numOfIngredientsInStep = ingredientsInStep.size
                 var ingredientNumber: Int = 1
-                for (ingredient in ingredientsInStep) {
-                    tts.speak(ingredient, TextToSpeech.QUEUE_ADD, null, "All Ingredients " + ingredientNumber)
-                    ingredientNumber += 1
+
+                if (numOfIngredientsInStep > 0) {
+                    for (ingredient in ingredientsInStep) {
+                        tts.speak(ingredient, TextToSpeech.QUEUE_ADD, null, "All Ingredients " + ingredientNumber)
+                        ingredientNumber += 1
+                    }
+                }
+                else {
+                    tts.speak("The requested step does not require any ingredients.", TextToSpeech.QUEUE_ADD, null, "No Ingredients")   
                 }
 
                 /* 
