@@ -45,7 +45,7 @@ class _RecipeStepState extends State<RecipeStep> {
   }
 
   Future<void> _startCooking(String recipeUrl) async {
-    String content;
+    String content = "Start cooking!";
     try {
       content = await platform.invokeMethod('startCooking', recipeUrl);
     } on PlatformException catch (e) {

@@ -25,6 +25,7 @@ class MainActivity: FlutterActivity() {
     var currentStep: Int = 0
     var houschef: Houschef? = null
     var stepContent: String = ""
+    var loader: PreParser = PreParser(false)
 
 
     /***************************************************************************************************/
@@ -37,6 +38,9 @@ class MainActivity: FlutterActivity() {
 
     // Channel for communicating with web scraping
     private val SEARCH_CHANNEL = "com.example.chef/search"
+
+    // Channel for communicating with Apache OpenNLP models
+    private val LOAD_CHANNEL = "com.example.chef/load"
 
 
     /**
@@ -55,6 +59,9 @@ class MainActivity: FlutterActivity() {
             else if (call.method == "tellAssistant") {
                 result.success(tellAssistant())
             }
+            else if (call.method == "startCooking_SPH") {
+                result.success(tellAssistant())
+            }
             else {
                 result.notImplemented()
             }
@@ -66,6 +73,21 @@ class MainActivity: FlutterActivity() {
             // Note: this method is invoked on the main thread.
             if (call.method == "search") {
                 result.success(search(call.arguments))
+            }
+            else if (call.method == "searchFullDetails") {
+                result.success(searchFullDetails(call.arguments))
+            }
+            else {
+                result.notImplemented()
+            }
+        }
+
+        // Configure SEARCH_CHANNEL
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, LOAD_CHANNEL).setMethodCallHandler {
+            call, result ->
+            // Note: this method is invoked on the main thread.
+            if (call.method == "loadModels") {
+                result.success(loadModels())
             }
             else if (call.method == "searchFullDetails") {
                 result.success(searchFullDetails(call.arguments))
@@ -96,10 +118,15 @@ class MainActivity: FlutterActivity() {
         var scraper: Scraper = Scraper()
         currentlyCooking.steps = mutableListOf()
         currentlyCooking.ingredients = mutableListOf()
+        currentlyCooking.smartSteps = mutableListOf()
 
         GlobalScope.launch(Dispatchers.IO) {
             currentlyCooking = scraper.getDetails(currentlyCooking)
         }
+
+        Thread.sleep(4000)
+
+        
         
 
         // Use Recipe to populate the SmartSteps it keeps track of
@@ -114,23 +141,23 @@ class MainActivity: FlutterActivity() {
         }
 
         var parses: MutableList<String> = mutableListOf()
-        /* 
-        GlobalScope.launch() {
-            parses = pp.rawToParses(rawRecipe)
+        
 
-            for (parse in parses) {
-                // Add it to the recipe (r) as a SmartStep
-                var ss: SmartStep = SmartStep()
-                ss.tree = RecipeWordTreeArborist.get().createTree(parse)
-                currentlyCooking.smartSteps?.add(ss!!)
-            }
-        } */
+        parses = loader.rawToParses(rawRecipe)
+
+        for (parse in parses) {
+            // Add it to the recipe (r) as a SmartStep
+            var ss: SmartStep = SmartStep()
+            ss.tree = RecipeWordTreeArborist.get().createTree(parse)
+            currentlyCooking.smartSteps?.add(ss!!)
+        }
+        
         
         
 
 
         currentStep = 0
-        return currentlyCooking.steps!!.get(0)
+        return currentlyCooking.smartSteps!!.get(0).tree.getSentence()
     }
 
 
@@ -156,6 +183,69 @@ class MainActivity: FlutterActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         houschef!!.activityResult(requestCode, resultCode, data)
+    }
+
+
+
+    /**
+     * 
+     */
+    private fun startCooking_SPH(args: Any) : String {
+        // TODO: Write the actual function
+        // Scrape the recipe from the url and get the details
+        // Save these details to some SmartRecipe.kt
+        // Inside SmartRecipe, do what you have to do...
+        // Then, return the first step from SmartRecipe as a plain string!!
+        currentlyCooking = Recipe()
+        if (args is String) {
+            currentlyCooking.url = args
+        }
+        
+
+        var scraper: Scraper = Scraper()
+        currentlyCooking.steps = mutableListOf()
+        currentlyCooking.ingredients = mutableListOf()
+        currentlyCooking.smartSteps = mutableListOf()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            currentlyCooking = scraper.getDetails(currentlyCooking)
+        }
+
+        Thread.sleep(4000)
+
+        
+        
+
+        // Use Recipe to populate the SmartSteps it keeps track of
+
+        // OpenNLP 
+        /* var pp: PreParser = PreParser() */
+        var rawRecipe: String = ""
+
+        // Construct entire recipe as one whole string
+        for (step in currentlyCooking.steps!!) {
+            rawRecipe = rawRecipe + " " + step
+        }
+
+        var parses: MutableList<String> = mutableListOf()
+        
+        /* 
+        parses = loader.rawToParses(rawRecipe)
+
+        for (parse in parses) {
+            // Add it to the recipe (r) as a SmartStep
+            var ss: SmartStep = SmartStep()
+            ss.tree = RecipeWordTreeArborist.get().createTree(parse)
+            currentlyCooking.smartSteps?.add(ss!!)
+        }
+        */
+        
+        
+        
+
+
+        currentStep = 0
+        return currentlyCooking.steps!!.get(0)
     }
 
 
@@ -255,7 +345,27 @@ class MainActivity: FlutterActivity() {
     }
 
 
-    
+    /***************************************************************************************************/
+    /************************************** MODEL LOADING CHANNEL **************************************/
+    /***************************************************************************************************/
+
+
+    private fun loadModels(): Boolean {
+        
+        GlobalScope.launch(newSingleThreadContext("SentenceDetectorThread")) {
+            loader.loadSentenceDetector()
+        }
+
+        GlobalScope.launch(newSingleThreadContext("TokenizerThread")) {
+            loader.loadTokenizer()
+        }
+
+        GlobalScope.launch(newSingleThreadContext("ParserThread")) {
+            loader.loadParser()
+        }
+
+        return true;
+    }
 
 
 

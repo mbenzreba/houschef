@@ -12,6 +12,9 @@ import './models/recipes.dart';
 import './views/recipe_step.dart';
 import './views/recipe_search_screen.dart';
 
+// Import for MethodChannel
+import 'package:flutter/services.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -23,6 +26,24 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+
+  static const platform = const MethodChannel("com.example.chef/load");
+
+  Future<void> _loadModels() async {
+    bool areThreadsLaunched;
+    try {
+      areThreadsLaunched = await platform.invokeMethod('loadModels');
+    } on PlatformException catch (e) {
+      areThreadsLaunched = false;
+    }
+  }
+
+  @override
+  void initState() {
+    _loadModels();
+  }
+
+
   Map<String, bool> _filters = {
     'gluten': false,
     'lactose': false,
