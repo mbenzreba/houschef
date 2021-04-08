@@ -43,6 +43,22 @@ class RecipeDAL {
     );
   }
 
+
+  // Define a function that inserts dogs into the database
+Future<void> insertRecipe(RecipeDataModel recipeDataModel) async {
+  // Get a reference to the database.
+  
+  final Database tempDb = await db; 
+
+  await tempDb.insert(
+    'recipes',
+    recipeDataModel.toMap(),
+    conflictAlgorithm: ConflictAlgorithm.replace,
+  );
+}
+
+
+
   Future<RecipeDataModel> GetRecipeDataModelByName(String name) async {
 
     
