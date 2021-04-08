@@ -62,7 +62,7 @@ class Scraper {
                 r.steps?.add(i.text())
             }
 
-            Log.d("s found", "Added to steps: " + r.steps?.get(index))
+            Log.d("s found", "Added to steps: " + i.text())
             index++
         }
 
@@ -72,7 +72,7 @@ class Scraper {
 
             r.ingredients?.add(i.text())
 
-            Log.d("i found", "Added to ingredients: " + r.ingredients?.get(index))
+            Log.d("i found", "Added to ingredients: " + i.text())
             index++
         }
 
