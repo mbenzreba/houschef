@@ -4,7 +4,8 @@ import 'package:chef/models/recipes.dart';
 import 'package:flutter/material.dart';
 
 
-
+// Import for MethodChannel
+import 'package:flutter/services.dart';
 
 
 
@@ -14,12 +15,14 @@ import 'package:flutter/material.dart';
 
 class RecipeStep extends StatefulWidget {
   static const routeName = '/recipe-step';
-  final String recipeStep;
+  //final String recipeStep;
 
-  RecipeStep(this.recipeStep);
+  final Map<dynamic,dynamic> recipe;
+
+  RecipeStep(this.recipe);
 
   @override
-  _RecipeStepState createState() => _RecipeStepState();
+  _RecipeStepState createState() => _RecipeStepState(recipe);
 }
 
 
@@ -29,6 +32,44 @@ class RecipeStep extends StatefulWidget {
 
 class _RecipeStepState extends State<RecipeStep> {
 
+  static const platform = const MethodChannel("com.example.chef/assistant");
+
+  String _currentStep = "";
+  final Map<dynamic, dynamic>  recipe;
+
+  _RecipeStepState(this.recipe);
+
+  @override
+  void initState() {
+    _startCooking(this.recipe["url"]);
+  }
+
+  Future<void> _startCooking(String recipeUrl) async {
+    String content;
+    try {
+      content = await platform.invokeMethod('startCooking', recipeUrl);
+    } on PlatformException catch (e) {
+      content = "Failed to start cooking";
+    }
+
+    setState(() {
+      _currentStep = content;
+    });
+  }
+
+
+  Future<void> _tellAssistant() async {
+    String content;
+    try {
+      content = await platform.invokeMethod('tellAssistant');
+    } on PlatformException catch (e) {
+      content = "Failed to tell assistant";
+    }
+
+    setState(() {
+      _currentStep = content;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +85,7 @@ class _RecipeStepState extends State<RecipeStep> {
         Container(
           padding: EdgeInsets.all(20),
             child: Text(
-            'Recipe step goes here', 
+              _currentStep, 
               style: Theme.of(context).textTheme.headline6,
             ),),
 
@@ -54,7 +95,7 @@ class _RecipeStepState extends State<RecipeStep> {
 
             ElevatedButton(
             child: Text('Next Step'),
-            onPressed: null,),
+            onPressed: _tellAssistant,),
 
             ElevatedButton(
               child: Text('Cancel'),

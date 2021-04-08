@@ -15,11 +15,16 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers
 
+import android.content.Intent
+
 import android.util.Log
 
 class MainActivity: FlutterActivity() {
 
     var currentlyCooking: Recipe = Recipe()
+    var currentStep: Int = 0
+    var houschef: Houschef? = null
+    var stepContent: String = ""
 
 
     /***************************************************************************************************/
@@ -85,19 +90,22 @@ class MainActivity: FlutterActivity() {
         currentlyCooking = Recipe()
         if (args is String) {
             currentlyCooking.url = args
-            currentlyCooking.title = args
         }
         
 
         var scraper: Scraper = Scraper()
         currentlyCooking.steps = mutableListOf()
         currentlyCooking.ingredients = mutableListOf()
-        currentlyCooking = scraper.getDetails(currentlyCooking)
+
+        GlobalScope.launch(Dispatchers.IO) {
+            currentlyCooking = scraper.getDetails(currentlyCooking)
+        }
+        
 
         // Use Recipe to populate the SmartSteps it keeps track of
 
         // OpenNLP 
-        var pp: PreParser = PreParser()
+        /* var pp: PreParser = PreParser() */
         var rawRecipe: String = ""
 
         // Construct entire recipe as one whole string
@@ -105,17 +113,24 @@ class MainActivity: FlutterActivity() {
             rawRecipe = rawRecipe + " " + step
         }
 
-        var parses: MutableList<String> = pp.rawToParses(rawRecipe)
-        for (parse in parses) {
-            // Add it to the recipe (r) as a SmartStep
-            var ss: SmartStep = SmartStep()
-            ss.tree = RecipeWordTreeArborist.get().createTree(parse)
-            currentlyCooking.smartSteps?.add(ss!!)
-        }
+        var parses: MutableList<String> = mutableListOf()
+        /* 
+        GlobalScope.launch() {
+            parses = pp.rawToParses(rawRecipe)
+
+            for (parse in parses) {
+                // Add it to the recipe (r) as a SmartStep
+                var ss: SmartStep = SmartStep()
+                ss.tree = RecipeWordTreeArborist.get().createTree(parse)
+                currentlyCooking.smartSteps?.add(ss!!)
+            }
+        } */
+        
+        
 
 
-
-        return currentlyCooking.smartSteps?.get(0)!!.tree.getSentence()
+        currentStep = 0
+        return currentlyCooking.steps!!.get(0)
     }
 
 
@@ -123,8 +138,24 @@ class MainActivity: FlutterActivity() {
     /**
      * 
      */
-    private fun tellAssistant() : String {
-        return "I told the assistant..."
+    private fun tellAssistant() : String? {
+        houschef = Houschef(this, this, currentlyCooking.steps!!, currentlyCooking.ingredients!!)
+        houschef!!.listenForRequest(100)
+        currentStep++
+        
+        if (houschef!!.currentStep == -1) {
+            stepContent = "Ask Houschef to start cooking!"
+        }
+        else {
+            stepContent = houschef!!.instructions[houschef!!.currentStep]
+        }
+        return stepContent
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        houschef!!.activityResult(requestCode, resultCode, data)
     }
 
 
@@ -162,7 +193,7 @@ class MainActivity: FlutterActivity() {
         }
         // NETWORKING ****
 
-        Thread.sleep(6000)
+        Thread.sleep(3500)
 
         
 
@@ -209,10 +240,12 @@ class MainActivity: FlutterActivity() {
             
         }
         Log.d("DEBUG", "Got the details fine " + r)
-        Thread.sleep(8000)
+        Thread.sleep(3500)
 
         Log.d("DEBUG", "R.steps is " + r.steps)
         Log.d("DEBUG", "R.ingredients is " + r.ingredients)
+
+        details.put("url", r.url!!)
         details.put("steps", r.steps!!)
         details.put("ingredients", r.ingredients!!)
 

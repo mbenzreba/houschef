@@ -109,7 +109,7 @@ class _MyAppState extends State<MyApp> {
         RecipeDetailScreen.routeName: (ctx) => RecipeDetailScreen(_toggleFavorite, _isRecipeFavorite),
         FiltersScreen.routeName: (ctx) => FiltersScreen(_filters, _setFilters),
         AboutScreen.routeName: (ctx) => AboutScreen(),
-        RecipeStep.routeName: (ctx) => RecipeStep("Recipe"),
+        RecipeStep.routeName: (ctx) => RecipeStep(Map<dynamic, dynamic>()),
         RecipeSearchScreen.routeName: (ctx) => RecipeSearchScreen(),
         //TestRecipeScreen.routeName: (ctx) => TestRecipeScreen(),
     

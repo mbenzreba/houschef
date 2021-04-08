@@ -144,9 +144,10 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
           label: "Start Recipe",
           backgroundColor: Colors.green,
           onTap: () {
-           Navigator.of(context).pushNamed(
-             RecipeStep.routeName
-           );
+          //  Navigator.of(context).pushNamed(
+          //    RecipeStep.routeName
+          //  );
+           Navigator.push(context, MaterialPageRoute(builder: (ctx) => RecipeStep(incomingRecipe)));
           }
         ),
 
