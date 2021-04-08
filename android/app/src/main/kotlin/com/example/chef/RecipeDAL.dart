@@ -7,7 +7,7 @@ class RecipeDataModel {
 
   String dbName;
 
-
+  
 
   RecipeDataModel({this.dbName});
 }
