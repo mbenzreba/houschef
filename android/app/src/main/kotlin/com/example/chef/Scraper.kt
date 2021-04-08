@@ -57,8 +57,10 @@ class Scraper {
 
         var index: Int = 0
         for(i in steps!!){
-
-            r.steps?.add(i.text())
+            
+            if(index > 0){
+                r.steps?.add(i.text())
+            }
 
             Log.d("s found", "Added to steps: " + r.steps?.get(index))
             index++
