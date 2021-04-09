@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 
 
+import '../dal/RecipeDAL.dart';
+import '../dal/RecipeDataModel.dart';
 import '../models/recipes.dart';
 import '../widgets/recipe_item.dart';
 
@@ -44,5 +46,13 @@ class FavoritesScreen extends StatelessWidget {
       );
     }
     
+  }
+
+
+  Future<List<RecipeDataModel>> fetchRecipes(){
+
+    RecipeDAL dal = new RecipeDAL();
+
+    return dal.getRecipes();
   }
 }

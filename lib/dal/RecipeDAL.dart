@@ -35,7 +35,7 @@ class RecipeDAL {
       onCreate: (db, version) {
         // Run the CREATE TABLE statement on the database.
         return db.execute(
-          "CREATE TABLE recipes(name TEXT, title TEXT, url TEXT, imgUrl TEXT, steps TEXT, ingredients TEXT)",
+          "CREATE TABLE IF NOT EXISTS recipes(title TEXT, url TEXT, imgUrl TEXT, steps TEXT, ingredients TEXT)",
         );
       },
       // Set the version. This executes the onCreate function and provides a
@@ -76,5 +76,20 @@ class RecipeDAL {
         ingredients: maps[i]['ingredients'],
       );
     });
+  }
+
+
+  Future<void> deleteRecipe(String name) async {
+    // Get a reference to the database.
+    final tempDb= await db;
+
+    // Remove the Dog from the Database.
+    await tempDb.delete(
+      'recipes',
+      // Use a `where` clause to delete a specific dog.
+      where: "name = ?",
+      // Pass the Dog's id as a whereArg to prevent SQL injection.
+      whereArgs: [name],
+    );
   }
 }
