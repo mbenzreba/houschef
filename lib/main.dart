@@ -1,12 +1,12 @@
 import './views/test_recipe_detail_screen.dart';
 import 'package:flutter/material.dart';
 
+
+
 import './dummy_data.dart';
 import './views/about_screen.dart';
 import './views/filters_screen.dart';
 import './views/recipe_detail_screen.dart';
-import './views/categories_screen.dart';
-import './views/category_meals_screen.dart';
 import './views/tabs_screen.dart';
 import './models/recipes.dart'; 
 import './views/recipe_step.dart';
@@ -17,6 +17,7 @@ import 'package:flutter/services.dart';
 
 void main() {
   runApp(MyApp());
+  
 }
 
 class MyApp extends StatefulWidget {
@@ -40,7 +41,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    _loadModels();
+    //_loadModels();
   }
 
 
@@ -104,10 +105,8 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'HousChef',
       theme: ThemeData(
-        primarySwatch: Colors.pink,
-        accentColor: Colors.amber,
-        canvasColor: Color.fromRGBO(255, 250, 225, 1),
         fontFamily: 'Raleway',
+        primarySwatch: Colors.blue,
         textTheme: ThemeData.light().textTheme.copyWith(
             body1: TextStyle(
               color: Color.fromRGBO(20, 50, 50, 1),
@@ -125,8 +124,6 @@ class _MyAppState extends State<MyApp> {
       // home always marks the entry point of our application
       home: TabsScreen(_favoritedRecipes),
       routes: {
-        CategoryMealsScreen.routeName: (ctx) =>
-            CategoryMealsScreen(_availableMeals),
         RecipeDetailScreen.routeName: (ctx) => RecipeDetailScreen(_toggleFavorite, _isRecipeFavorite),
         FiltersScreen.routeName: (ctx) => FiltersScreen(_filters, _setFilters),
         AboutScreen.routeName: (ctx) => AboutScreen(),
@@ -139,13 +136,13 @@ class _MyAppState extends State<MyApp> {
       onGenerateRoute: (settings) {
         print(settings.arguments);
         return MaterialPageRoute(
-          builder: (ctx) => CategoryMealsScreen(_availableMeals),
+          builder: (ctx) => TabsScreen(_favoritedRecipes),
         );
       },
 
       onUnknownRoute: (settings) {
         return MaterialPageRoute(
-          builder: (ctx) => CategoryMealsScreen(_availableMeals),
+          builder: (ctx) => TabsScreen(_favoritedRecipes),
         );
       },
     );

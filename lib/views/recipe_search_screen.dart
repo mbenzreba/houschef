@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 // Import for UintList
 import 'dart:typed_data';
 
+
+
 import './test_recipe_detail_screen.dart';
 
 
@@ -109,10 +111,17 @@ class _RecipeSearcScreenState extends State<RecipeSearchScreen> {
                         horizontal: 10,
                         vertical: 5,
                       ),
-                      child: Text(
-                        recipeMap[index]['title'],
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      child: Column(
+                        children: <Widget>[
+                          Text(
+                          recipeMap[index]['title'],
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+
+                          Text('Retrieved from allrecipes.com', style: TextStyle(fontSize: 12),),
+                        ], 
                       ),
+                      
                     ),
                   ),
         ),
@@ -122,7 +131,7 @@ class _RecipeSearcScreenState extends State<RecipeSearchScreen> {
         children: <Widget>[
          Container(
            height: 50,
-           color: Colors.amber[600],
+           color: Colors.white,
            child: const Center(child: Text('Entry A')),
          ),
         ],
@@ -132,12 +141,7 @@ class _RecipeSearcScreenState extends State<RecipeSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Edit Product'),
-      ),
-
-      body: Padding(
+    return Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           child: SingleChildScrollView(
@@ -148,14 +152,15 @@ class _RecipeSearcScreenState extends State<RecipeSearchScreen> {
                   decoration: InputDecoration(labelText: 'Enter recipe name'), 
                   textInputAction: TextInputAction.done,
                 ),
+                SizedBox(height: 20),
                 createRecipeWidgets(),
               ],
             ),
           ),
         ),
-      ),
+      );
 
 
-    );
+    
   }
 }

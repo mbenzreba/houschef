@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import '../models/recipes.dart';
+import 'package:flutter/services.dart';
 
 
 
 import '../widgets/main_drawer.dart';
 import '../views/favorites_screen.dart';
 import '../views/recent_recipe_screen.dart';
-import '../views/categories_screen.dart';
+import '../views/recipe_search_screen.dart';
 import './favorites_screen.dart';
 
 import './recipe_search_screen.dart';
 
-
+import '../constants.dart';
 
 
 class TabsScreen extends StatefulWidget {
@@ -38,8 +39,8 @@ class _TabsScreenState extends State<TabsScreen> {
     
     _pages = [
       {
-        'page': CategoriesScreen(),
-        'title': 'Categories',
+        'page': RecipeSearchScreen(),
+        'title': 'Search Recipe',
       },
       {
         'page': FavoritesScreen(widget.favoriteMeals), 
@@ -65,12 +66,14 @@ class _TabsScreenState extends State<TabsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.black12,
+        brightness: Brightness.dark,
         title: Text(_pages[_selectedPageIndex]['title']),
-        actions: <Widget>[
-        IconButton(icon: const Icon(Icons.search), onPressed: () {
-          Navigator.of(context).pushNamed(RecipeSearchScreen.routeName);
-        },),
-      ],
+        // actions: <Widget>[
+        // IconButton(icon: const Icon(Icons.search), onPressed: () {
+        //   Navigator.of(context).pushNamed(RecipeSearchScreen.routeName);
+        // },),
+      //],
       ),
       
     
@@ -81,24 +84,26 @@ class _TabsScreenState extends State<TabsScreen> {
 
       bottomNavigationBar: BottomNavigationBar(
         onTap: _selectPage,
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Colors.black12,
+        
         unselectedItemColor: Colors.white,
-        selectedItemColor: Theme.of(context).accentColor,
+        selectedItemColor: Colors.black,
         currentIndex: _selectedPageIndex,
         type: BottomNavigationBarType.shifting,
         items: [
           BottomNavigationBarItem(
-            backgroundColor: Theme.of(context).primaryColor,
-            icon: Icon(Icons.category), 
-            label: 'Categories',
+            backgroundColor: Colors.black12,
+            icon: Icon(Icons.search), 
+            label: 'Search',
           ),
           BottomNavigationBarItem(
-            backgroundColor: Theme.of(context).primaryColor,
+            backgroundColor: Colors.black12,
             icon: Icon(Icons.favorite), 
             label: 'Favorites',
           ),
           BottomNavigationBarItem(
-            backgroundColor: Theme.of(context).primaryColor,
+            backgroundColor: Colors.black12,
+
             icon: Icon(Icons.history), 
             label: 'Recents',
           ),
