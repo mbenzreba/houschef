@@ -405,6 +405,7 @@ class Houschef : Activity {
         else if (isAllIngredientRequest) {
             if (unrecognizedRequest && currentStep > -1) {
                 allIngredientsStep = currentStep
+                unrecognizedRequest = false
             }
             else if (!unrecognizedRequest) {
                 allIngredientsStep = newStep - 1
