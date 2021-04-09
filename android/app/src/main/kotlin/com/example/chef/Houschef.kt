@@ -27,6 +27,8 @@ class Houschef : Activity {
     var numOfIngredientsInStep:Int = -1
 
     var isTimeRequest:Boolean = false
+    var isTimeRequest:Boolean = false
+    var isTempRequest:Boolean = false
 
     var unrecognizedRequest:Boolean = false // keeps track if user responded with an unrecognized command
     var cancelRequest:Boolean = false // keeps track if the user responded with a cancel command
@@ -78,8 +80,8 @@ class Houschef : Activity {
                 if (utteranceId == "Cancel") {
                     listenForRequest(kRequestCodeConfirmation)
                 }
-                else if (utteranceId == "Out of Bounds" || utteranceId == "ingredient" || utteranceId == "step" || utteranceId == "Unrecognized" || utteranceId == "All Ingredients " + numOfIngredientsInStep 
-                || utteranceId == "Finished" || utteranceId == "No Ingredients") {
+                else if (utteranceId == "Out of Bounds" || utteranceId == "ingredient" || utteranceId == "step" || utteranceId == "Unrecognized"
+                    || utteranceId == "All Ingredients " + numOfIngredientsInStep || utteranceId == "Finished" || utteranceId == "Temp" || utteranceId == "Time") {
                     listenForRequest(kRequestCodeSpeechInput)
                 }
 
@@ -214,7 +216,14 @@ class Houschef : Activity {
                 }
             }
         }
-
+        else if (inputResult.contains("temperature")) {
+            findStepNumber(inputResult, false, true)
+            isTempRequest = true
+        }
+        else if (inputResult.contains("time") || inputResult.contains("how long")) {
+            findStepNumber(inputResult, false, true)
+            isTimeRequest = true
+        }
         // if the user indicates to go to a specific step, the current step will be set to the desired step to be read
         else if (inputResult.contains("what is") && inputResult.contains("ingredient")) {
             findStepNumber(inputResult, true, false)
@@ -305,6 +314,14 @@ class Houschef : Activity {
 
                 isAllIngredientRequest = false
             }
+            else if (isTempRequest) {
+                tts.speak("This is the temperature", TextToSpeech.QUEUE_ADD, null, "Temp")
+                isTempRequest = false
+            }
+            else if (isTimeRequest) {
+                tts.speak("This is the time", TextToSpeech.QUEUE_ADD, null, "Time")
+                isTimeRequest = false
+            }
             // else, the requested step is read to the user
             else {
                 // if the recipe has not finished listing ingredients, an ingredient is read to the user
@@ -377,19 +394,20 @@ class Houschef : Activity {
             }
             else {
                 if (newStep <= recipe.smartSteps!!.size && newStep > 0) {
-
-                    if (isAllIngredientRequest) {
-                        allIngredientsStep = newStep - 1
-                    }
-                    else {
-                        currentStep = newStep - 1
-                    }
-
+                    currentStep = newStep - 1
                     finishedIngredients = true
                     ingredientStep = ingredients.size - 1
                 } else {
                     requestOutOfBounds = true;
                 }
+            }
+        }
+        else if (isAllIngredientRequest) {
+            if (unrecognizedRequest && currentStep > -1) {
+                allIngredientsStep = currentStep
+            }
+            else if (!unrecognizedRequest) {
+                allIngredientsStep = newStep - 1
             }
         }
     }
