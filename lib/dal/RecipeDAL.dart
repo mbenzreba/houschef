@@ -1,0 +1,80 @@
+import 'dart:async';
+
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:flutter/widgets.dart';
+
+import 'RecipeDataModel.dart';
+
+class RecipeDAL {
+  
+  String dbName;
+
+  Future<Database> db;
+
+  RecipeDAL({this.dbName});
+
+  Future<void> CreateDatabase() async {
+    // Avoid errors caused by flutter upgrade.
+    // Importing 'package:flutter/widgets.dart' is required.
+    WidgetsFlutterBinding.ensureInitialized();
+    // Open the database and store the reference.
+    db = openDatabase(
+      // Set the path to the database. Note: Using the `join` function from the
+      // `path` package is best practice to ensure the path is correctly
+      // constructed for each platform.
+      join(await getDatabasesPath(), 'recipedatabase.db'),
+    );
+
+    db = openDatabase(
+      // Set the path to the database. Note: Using the `join` function from the
+      // `path` package is best practice to ensure the path is correctly
+      // constructed for each platform.
+      join(await getDatabasesPath(), 'recipedatabase.db'),
+      // When the database is first created, create a table to store dogs.
+      onCreate: (db, version) {
+        // Run the CREATE TABLE statement on the database.
+        return db.execute(
+          "CREATE TABLE recipes(name TEXT, title TEXT, url TEXT, imgUrl TEXT, steps TEXT, ingredients TEXT)",
+        );
+      },
+      // Set the version. This executes the onCreate function and provides a
+      // path to perform database upgrades and downgrades.
+      version: 1,
+    );
+  }
+
+
+  // Define a function that inserts dogs into the database
+  Future<void> insertRecipe(RecipeDataModel recipeDataModel) async {
+  
+    final Database tempDb = await db; 
+
+    await tempDb.insert(
+      'recipes',
+      recipeDataModel.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+
+
+  Future<List<RecipeDataModel>> getRecipes() async {
+
+    final Database tempDb = await db;
+
+    // Query the table for all The Dogs.
+    final List<Map<String, dynamic>> maps = await tempDb.query('recipes');
+
+    // Convert the List<Map<String, dynamic> into a List<Dog>.
+    return List.generate(maps.length, (i) {
+      return RecipeDataModel(
+        title: maps[i]['title'],
+        url: maps[i]['url'],
+        imgUrl: maps[i]['imgUrl'],
+        steps: maps[i]['steps'],
+        ingredients: maps[i]['ingredients'],
+      );
+    });
+  }
+}
