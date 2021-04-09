@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'RecipeDataModel.dart';
 
 class RecipeDAL {
+  
   String dbName;
 
   Future<Database> db;
@@ -45,22 +46,35 @@ class RecipeDAL {
 
 
   // Define a function that inserts dogs into the database
-Future<void> insertRecipe(RecipeDataModel recipeDataModel) async {
-  // Get a reference to the database.
+  Future<void> insertRecipe(RecipeDataModel recipeDataModel) async {
   
-  final Database tempDb = await db; 
+    final Database tempDb = await db; 
 
-  await tempDb.insert(
-    'recipes',
-    recipeDataModel.toMap(),
-    conflictAlgorithm: ConflictAlgorithm.replace,
-  );
-}
+    await tempDb.insert(
+      'recipes',
+      recipeDataModel.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
 
 
 
-  Future<RecipeDataModel> GetRecipeDataModelByName(String name) async {
+  Future<List<RecipeDataModel>> getRecipes() async {
 
-    
+    final Database tempDb = await db;
+
+    // Query the table for all The Dogs.
+    final List<Map<String, dynamic>> maps = await tempDb.query('recipes');
+
+    // Convert the List<Map<String, dynamic> into a List<Dog>.
+    return List.generate(maps.length, (i) {
+      return RecipeDataModel(
+        title: maps[i]['title'],
+        url: maps[i]['url'],
+        imgUrl: maps[i]['imgUrl'],
+        steps: maps[i]['steps'],
+        ingredients: maps[i]['ingredients'],
+      );
+    });
   }
 }
