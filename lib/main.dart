@@ -47,7 +47,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
 
-    //_loadModels();
+    _loadModels();
     dal = new RecipeDAL(); 
     dal.CreateDatabase();
 
