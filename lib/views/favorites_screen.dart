@@ -8,24 +8,32 @@ import '../dal/RecipeDataModel.dart';
 import '../models/recipes.dart';
 import '../widgets/recipe_item.dart';
 
+import 'dart:async';
+
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
+import 'dart:io';
 
 
-
-
-
-
-
-
-class FavoritesScreen extends StatelessWidget {
+class FavoritesScreen extends StatefulWidget {
 
   final List<Recipe> favoriteMeals;
 
   FavoritesScreen(this.favoriteMeals);
 
   @override
+  _FavoritesScreenState createState() => _FavoritesScreenState();
+
+}
+
+
+
+
+class _FavoritesScreenState extends State<FavoritesScreen> {
+  @override
   Widget build(BuildContext context) {
     
-    if (favoriteMeals.isEmpty) {
+    if (widget.favoriteMeals.isEmpty) {
       return Center(
       child: Text('You have no favorites yet - start adding some!'),
     );
@@ -34,25 +42,43 @@ class FavoritesScreen extends StatelessWidget {
       return ListView.builder(
         itemBuilder: (ctx, index) {
         return RecipeItem(
-          id: favoriteMeals[index].id,
-          title: favoriteMeals[index].title, 
-          imageURL: favoriteMeals[index].imageURL, 
-          duration: favoriteMeals[index].duration, 
-          complexity: favoriteMeals[index].complexity, 
-          affordability: favoriteMeals[index].affordability,
+          id: widget.favoriteMeals[index].id,
+          title: widget.favoriteMeals[index].title, 
+          imageURL: widget.favoriteMeals[index].imageURL, 
+          duration: widget.favoriteMeals[index].duration, 
+          complexity: widget.favoriteMeals[index].complexity, 
+          affordability: widget.favoriteMeals[index].affordability,
         );  
       }, 
-      itemCount: favoriteMeals.length,
+      itemCount: widget.favoriteMeals.length,
       );
     }
     
   }
 
 
-  Future<List<RecipeDataModel>> fetchRecipes(){
+  @override
+  void initState() {
+
+    super.initState();
+
+
+    Future<List<RecipeDataModel>> list = GetData();
+
+  }
+
+
+  Future <List<RecipeDataModel>> GetData() async {
 
     RecipeDAL dal = new RecipeDAL();
+    
+    await dal.Connect();
 
-    return dal.getRecipes();
+    List<RecipeDataModel> list = await dal.getRecipes();
+
+    return list;
   }
+
+
+
 }

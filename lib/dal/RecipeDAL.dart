@@ -14,17 +14,10 @@ class RecipeDAL {
 
   RecipeDAL({this.dbName});
 
-  Future<void> CreateDatabase() async {
+  Future<void> Connect() async {
     // Avoid errors caused by flutter upgrade.
     // Importing 'package:flutter/widgets.dart' is required.
     WidgetsFlutterBinding.ensureInitialized();
-    // Open the database and store the reference.
-    db = openDatabase(
-      // Set the path to the database. Note: Using the `join` function from the
-      // `path` package is best practice to ensure the path is correctly
-      // constructed for each platform.
-      join(await getDatabasesPath(), 'recipedatabase.db'),
-    );
 
     db = openDatabase(
       // Set the path to the database. Note: Using the `join` function from the
@@ -44,6 +37,14 @@ class RecipeDAL {
     );
   }
 
+  Future<Database> getDbInstance() async {
+
+    final String databasesPath = await getDatabasesPath();
+    final String path = join(databasesPath, 'recipedatabase.db');
+
+    return await openDatabase(path, version: 1);
+
+  }
 
   // Define a function that inserts dogs into the database
   Future<void> insertRecipe(RecipeDataModel recipeDataModel) async {
@@ -63,10 +64,10 @@ class RecipeDAL {
 
     final Database tempDb = await db;
 
-    // Query the table for all The Dogs.
+    // Query the table for all The Recipes.
     final List<Map<String, dynamic>> maps = await tempDb.query('recipes');
 
-    // Convert the List<Map<String, dynamic> into a List<Dog>.
+    // Convert the List<Map<String, dynamic> into a List<>.
     return List.generate(maps.length, (i) {
       return RecipeDataModel(
         title: maps[i]['title'],
