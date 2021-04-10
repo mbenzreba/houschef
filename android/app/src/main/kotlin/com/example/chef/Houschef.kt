@@ -314,11 +314,25 @@ class Houschef : Activity {
                 isAllIngredientRequest = false
             }
             else if (isTempRequest) {
-                tts.speak("This is the temperature", TextToSpeech.QUEUE_ADD, null, "Temp")
+                // TODO: Handle case for multiple temperatures (appropriate voice assistant response/prompt)
+                var temperatureStrings = this.recipe.smartSteps!!.get(allIngredientsStep).tree.getFulfillsForTarget("temperature")
+                if (temperatureStrings.size > 0) {
+                    for (temperature in temperatureStrings) {
+                        tts.speak(temperature, TextToSpeech.QUEUE_ADD, null,"Temperature")
+                    }
+                }
+                
                 isTempRequest = false
             }
             else if (isTimeRequest) {
-                tts.speak("This is the time", TextToSpeech.QUEUE_ADD, null, "Time")
+                var timeStrings = this.recipe.smartSteps!!.get(allIngredientsStep).tree.getFulfillsForTarget("time")
+
+                if (timeStrings.size > 0) {
+                    for (time in timeStrings) {
+                        tts.speak(time, TextToSpeech.QUEUE_ADD, null, "Time")
+                    }
+                }
+                
                 isTimeRequest = false
             }
             // else, the requested step is read to the user
@@ -381,7 +395,7 @@ class Houschef : Activity {
         }
 
         // if the request is recognizable, the ingredient/step number will be altered to the requested number
-        if (!unrecognizedRequest) {
+        if (!unrecognizedRequest && !isAllIngredientRequest) {
             if (isIngredientRequest) {
                 if (newStep <= recipe.ingredients!!.size && newStep > 0) {
                     ingredientStep = newStep - 1
