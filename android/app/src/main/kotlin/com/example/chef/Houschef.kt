@@ -27,7 +27,6 @@ class Houschef : Activity {
     var numOfIngredientsInStep:Int = -1
 
     var isTimeRequest:Boolean = false
-    var isTimeRequest:Boolean = false
     var isTempRequest:Boolean = false
 
     var unrecognizedRequest:Boolean = false // keeps track if user responded with an unrecognized command
