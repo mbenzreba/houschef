@@ -3,15 +3,18 @@ package com.example.chef
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
+import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.tts.TextToSpeech
+import android.speech.SpeechRecognizer
 import android.speech.tts.UtteranceProgressListener
 import android.util.Log
-import android.widget.Toast
 import java.util.*
 
 class Houschef : Activity, TextToSpeech.OnInitListener {
     private lateinit var tts:TextToSpeech // a TextToSpeech object used to have text read to the user
+    private lateinit var speech:SpeechRecognizer
 
     var ingredients:List<String> // the list of ingredients of the recipe
     var ingredientStep:Int = -1 // the current ingredient that the user is on of the recipe
@@ -20,7 +23,6 @@ class Houschef : Activity, TextToSpeech.OnInitListener {
 
     var instructions:List<String> // recipe instructions that will be read to the user
     var currentStep:Int = -1  // the current step that the user is on of the recipe
-
 
     var isAllIngredientRequest:Boolean = false
     var allIngredientsStep:Int = -1
@@ -63,6 +65,16 @@ class Houschef : Activity, TextToSpeech.OnInitListener {
         this.recipe = recipe
         this.stepHolder = stepHolder
 
+        tts = TextToSpeech(context, TextToSpeech.OnInitListener { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                val result = tts.setLanguage(Locale.CANADA)
+
+                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    Log.e("TTS", "Language not supported")
+                }
+            }
+        })
+
         tts!!.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
             override fun onDone(utteranceId: String) {
 
@@ -72,11 +84,71 @@ class Houschef : Activity, TextToSpeech.OnInitListener {
                 else if (utteranceId == "Out of Bounds" || utteranceId == "ingredient" || utteranceId == "step" || utteranceId == "Unrecognized" || utteranceId == "All Ingredients " + numOfIngredientsInStep || utteranceId == "Finished" || utteranceId == "No Temp" || utteranceId == "No Time" || utteranceId == "Time " + numOfIngredientsInStep || utteranceId == "Temp " + numOfIngredientsInStep) {
                     listenForRequest(kRequestCodeSpeechInput)
                 }
-
+                else if (utteranceId == "YC") {
+                    // user cancels, exit to previous screen or shutoff voice
+                }
             }
 
             override fun onError(utteranceId: String) {}
             override fun onStart(utteranceId: String) {}
+        })
+
+        speech = SpeechRecognizer.createSpeechRecognizer(currentContext)
+        speech.setRecognitionListener(object: RecognitionListener {
+            override fun onReadyForSpeech(params: Bundle?) {
+
+            }
+
+            override fun onBufferReceived(buffer: ByteArray?) {
+
+            }
+
+            override fun onEndOfSpeech() {
+
+            }
+
+            override fun onPartialResults(partialResults: Bundle?) {
+
+            }
+
+            override fun onError(error: Int) {
+                tts.speak(error.toString(), TextToSpeech.QUEUE_ADD, null)
+
+                when {
+                    // error 7: got input but cant determine it, reprompts user for input
+                    error == 7 -> {
+                        tts.speak("Unable to recognize request, please try again.", TextToSpeech.QUEUE_FLUSH, null, "Unrecognized")
+                    }
+                    // error 1: lost network connection
+                    error == 1 -> {
+
+                    }
+                    // error 6: went too long without any input, will sleep for 1 second and reprompt for input
+                    error == 6 -> {
+                        Thread.sleep(1000)
+                        listenForRequest(100)
+                    }
+                }
+            }
+
+            override fun onEvent(eventType: Int, params: Bundle?) {
+
+            }
+
+            override fun onResults(results: Bundle?) {
+                val result = results!!.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+
+                determineRequest(result!![0].toLowerCase())
+                processRequest()
+            }
+
+            override fun onRmsChanged(rmsdB: Float) {
+
+            }
+
+            override fun onBeginningOfSpeech() {
+
+            }
         })
     }
 
@@ -102,10 +174,15 @@ class Houschef : Activity, TextToSpeech.OnInitListener {
         }
 
         try {
-            currentActivity.startActivityForResult(intent, listenCode)
+            //currentActivity.startActivityForResult(intent, listenCode)
+            currentActivity.runOnUiThread(object: Runnable {
+                override fun run() {
+                    speech.startListening(intent)
+                }
+            })
         }
         catch (e: Exception) {
-            Toast.makeText(currentContext, e.message, Toast.LENGTH_SHORT).show()
+            Log.e("Listen Error", e.message)
         }
     }
 
@@ -131,12 +208,12 @@ class Houschef : Activity, TextToSpeech.OnInitListener {
 
                     // if the user response is no to the cancellation prompt, the recipe will continue being read
                     if (result[0].toLowerCase() == "no") {
-                        tts.speak("Okay, returning to recipe instructions", TextToSpeech.QUEUE_ADD, null)
+                        tts.speak("Okay, returning to recipe instructions", TextToSpeech.QUEUE_ADD, null, "Unrecognized")
                         listenForRequest(kRequestCodeSpeechInput)
                     }
                     // if the user responds with yes to the cancellation prompt,
                     else if (result[0].toLowerCase() == "yes") {
-                        tts.speak("Okay, cancelling recipe instructions.", TextToSpeech.QUEUE_ADD, null)
+                        tts.speak("Okay, cancelling recipe instructions.", TextToSpeech.QUEUE_ADD, null, "YC")
                     }
                 }
             }
@@ -475,13 +552,7 @@ class Houschef : Activity, TextToSpeech.OnInitListener {
     }
 
     override fun onInit(status: Int) {
-        if (status == TextToSpeech.SUCCESS) {
-            val result = tts.setLanguage(Locale.CANADA)
 
-            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                Log.e("TTS", "Language not supported")
-            }
-        }
     }
 
     override fun onDestroy() {
