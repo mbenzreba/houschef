@@ -10,7 +10,7 @@ import android.util.Log
 import android.widget.Toast
 import java.util.*
 
-class Houschef : Activity {
+class Houschef : Activity, TextToSpeech.OnInitListener {
     private lateinit var tts:TextToSpeech // a TextToSpeech object used to have text read to the user
 
     var ingredients:List<String> // the list of ingredients of the recipe
@@ -63,24 +63,13 @@ class Houschef : Activity {
         this.recipe = recipe
         this.stepHolder = stepHolder
 
-        tts = TextToSpeech(context, TextToSpeech.OnInitListener { status ->
-            if (status == TextToSpeech.SUCCESS) {
-                val result = tts.setLanguage(Locale.CANADA)
-
-                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    Log.e("TTS", "Language not supported")
-                }
-            }
-        })
-
         tts!!.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
             override fun onDone(utteranceId: String) {
 
                 if (utteranceId == "Cancel") {
                     listenForRequest(kRequestCodeConfirmation)
                 }
-                else if (utteranceId == "Out of Bounds" || utteranceId == "ingredient" || utteranceId == "step" || utteranceId == "Unrecognized"
-                    || utteranceId == "All Ingredients " + numOfIngredientsInStep || utteranceId == "Finished" || utteranceId == "Temp" || utteranceId == "Time") {
+                else if (utteranceId == "Out of Bounds" || utteranceId == "ingredient" || utteranceId == "step" || utteranceId == "Unrecognized" || utteranceId == "All Ingredients " + numOfIngredientsInStep || utteranceId == "Finished" || utteranceId == "No Temp" || utteranceId == "No Time" || utteranceId == "Time " + numOfIngredientsInStep || utteranceId == "Temp " + numOfIngredientsInStep) {
                     listenForRequest(kRequestCodeSpeechInput)
                 }
 
@@ -316,10 +305,18 @@ class Houschef : Activity {
             else if (isTempRequest) {
                 // TODO: Handle case for multiple temperatures (appropriate voice assistant response/prompt)
                 var temperatureStrings = this.recipe.smartSteps!!.get(allIngredientsStep).tree.getFulfillsForTarget("temperature")
+
+                var temperatureNum:Int = 1
+                numOfIngredientsInStep = temperatureStrings.size
+
                 if (temperatureStrings.size > 0) {
                     for (temperature in temperatureStrings) {
-                        tts.speak(temperature, TextToSpeech.QUEUE_ADD, null,"Temperature")
+                        tts.speak(temperature, TextToSpeech.QUEUE_ADD, null, "Temp " + temperatureNum)
+                        temperatureNum += 1
                     }
+                }
+                else {
+                    tts.speak("The requested step does not require a temperature.", TextToSpeech.QUEUE_ADD, null, "No Temp")
                 }
                 
                 isTempRequest = false
@@ -327,10 +324,17 @@ class Houschef : Activity {
             else if (isTimeRequest) {
                 var timeStrings = this.recipe.smartSteps!!.get(allIngredientsStep).tree.getFulfillsForTarget("time")
 
+                var timeNum:Int = 1
+                numOfIngredientsInStep = timeStrings.size
+
                 if (timeStrings.size > 0) {
                     for (time in timeStrings) {
-                        tts.speak(time, TextToSpeech.QUEUE_ADD, null, "Time")
+                        tts.speak(time, TextToSpeech.QUEUE_ADD, null, "Time " + timeNum)
+                        timeNum += 1
                     }
+                }
+                else {
+                    tts.speak("The requested step does have a time requirement", TextToSpeech.QUEUE_ADD, null, "No Temp")
                 }
                 
                 isTimeRequest = false
@@ -468,5 +472,25 @@ class Houschef : Activity {
         }
 
         return convertedNum
+    }
+
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            val result = tts.setLanguage(Locale.CANADA)
+
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "Language not supported")
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        //Close the Text to Speech Library
+        if(tts != null) {
+
+            tts.stop();
+            tts.shutdown();
+        }
+        super.onDestroy()
     }
 }
