@@ -60,8 +60,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     list = new List<RecipeDataModel>();
     GetData();
 
-  }
 
+  }
+ 
 
   Future<void> GetData() async {
 
