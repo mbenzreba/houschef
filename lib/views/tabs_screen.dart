@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 
 import '../widgets/main_drawer.dart';
 import '../views/favorites_screen.dart';
-import '../views/recent_recipe_screen.dart';
+import 'Add_recipe_screen.dart';
 import '../views/recipe_search_screen.dart';
 import './favorites_screen.dart';
 
@@ -16,10 +16,6 @@ import '../constants.dart';
 
 
 class TabsScreen extends StatefulWidget {
-
-  final List<Recipe> favoriteMeals;
-
-  TabsScreen(this.favoriteMeals);
 
   @override
   _TabsScreenState createState() => _TabsScreenState();
@@ -43,11 +39,11 @@ class _TabsScreenState extends State<TabsScreen> {
         'title': 'Search Recipe',
       },
       {
-        'page': FavoritesScreen(widget.favoriteMeals), 
+        'page': FavoritesScreen(), 
         'title': 'Favorites',
       },
       {
-        'page': RecentRecipes(), 
+        'page': AddRecipes(), 
         'title': 'Recent',
       },
     ];
@@ -69,11 +65,6 @@ class _TabsScreenState extends State<TabsScreen> {
         backgroundColor: Colors.black12,
         brightness: Brightness.dark,
         title: Text(_pages[_selectedPageIndex]['title']),
-        // actions: <Widget>[
-        // IconButton(icon: const Icon(Icons.search), onPressed: () {
-        //   Navigator.of(context).pushNamed(RecipeSearchScreen.routeName);
-        // },),
-      //],
       ),
       
     
@@ -104,8 +95,8 @@ class _TabsScreenState extends State<TabsScreen> {
           BottomNavigationBarItem(
             backgroundColor: Colors.black12,
 
-            icon: Icon(Icons.history), 
-            label: 'Recents',
+            icon: Icon(Icons.add), 
+            label: 'Add a Recipe',
           ),
         ],
       ),

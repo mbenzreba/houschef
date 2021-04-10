@@ -144,21 +144,23 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
           label: "Start Recipe",
           backgroundColor: Colors.green,
           onTap: () {
-          //  Navigator.of(context).pushNamed(
-          //    RecipeStep.routeName
-          //  );
            Navigator.push(context, MaterialPageRoute(builder: (ctx) => RecipeStep(incomingRecipe)));
           }
         ),
 
-        // SpeedDialChild(
-        //   child: Icon(isFavorite(recipeId) ? Icons.favorite : Icons.favorite_border,),
-        //   label: "Favourite",
-        //   backgroundColor: Colors.red,
-        //   onTap: () => toggleFavorite(recipeId),
-        // ),
+        SpeedDialChild(
+          child: Icon(Icons.favorite_border,),
+          label: "Favourite",
+          backgroundColor: Colors.red,
+          onTap: () {
+            // logic for insert goes here 
+          },
+        ),
 
       ],),
+
+
+      
       // floatingActionButton: FloatingActionButton(
       //   child: Icon(
       //     isFavorite(recipeId) ? Icons.favorite : Icons.favorite_border,

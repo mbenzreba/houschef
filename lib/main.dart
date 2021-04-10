@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 
 
 
-import './dummy_data.dart';
+
 import './views/about_screen.dart';
-import './views/filters_screen.dart';
 import './views/recipe_detail_screen.dart';
 import './views/tabs_screen.dart';
 import './models/recipes.dart'; 
@@ -54,59 +53,31 @@ class _MyAppState extends State<MyApp> {
   }
 
 
-  Map<String, bool> _filters = {
-    'gluten': false,
-    'lactose': false,
-    'vegan': false,
-    'vegetarian': false,
-  };
+ 
+  // List<Recipe> _favoritedRecipes = [];
 
-  List<Recipe> _availableMeals = DUMMY_MEALS;
-  List<Recipe> _favoritedRecipes = [];
 
-  void _setFilters(Map<String, bool> filterData) {
-    setState(() {
-      _filters = filterData;
+  // void _toggleFavorite(String recipeId) {
+  //   final exsitingIndex =
+  //       _favoritedRecipes.indexWhere((recipe) => recipe.id == recipeId);
 
-      _availableMeals = DUMMY_MEALS.where((recipe) {
-        if (_filters['gluten'] && !recipe.isGlutenFree) {
-          return false;
-        }
-        if (_filters['lactose'] && !recipe.isLactoseFree) {
-          return false;
-        }
-        if (_filters['vegetarian'] && !recipe.isVegetarian) {
-          return false;
-        }
-        if (_filters['vegan'] && !recipe.isVegan) {
-          return false;
-        }
-        return true;
-      }).toList();
-    });
-  }
-
-  void _toggleFavorite(String recipeId) {
-    final exsitingIndex =
-        _favoritedRecipes.indexWhere((recipe) => recipe.id == recipeId);
-
-    if (exsitingIndex >= 0) {
-      setState(() {
-        _favoritedRecipes.removeAt(exsitingIndex);
-      });
-    } else {
-      setState(() {
-        _favoritedRecipes.add(
-          DUMMY_MEALS.firstWhere((recipe) => recipe.id == recipeId));
-      });
-    }
-  }
+  //   if (exsitingIndex >= 0) {
+  //     setState(() {
+  //       _favoritedRecipes.removeAt(exsitingIndex);
+  //     });
+  //   } else {
+  //     setState(() {
+  //       _favoritedRecipes.add(
+  //         DUMMY_MEALS.firstWhere((recipe) => recipe.id == recipeId));
+  //     });
+  //   }
+  //}
 
 
 
-  bool _isRecipeFavorite(String id) {
-    return _favoritedRecipes.any((recipe) => recipe.id == id);
-  }
+  // bool _isRecipeFavorite(String id) {
+  //   return _favoritedRecipes.any((recipe) => recipe.id == id);
+  // }
 
 
   @override
@@ -131,27 +102,24 @@ class _MyAppState extends State<MyApp> {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       // home always marks the entry point of our application
-      home: TabsScreen(_favoritedRecipes),
+      home: TabsScreen(),
       routes: {
-        RecipeDetailScreen.routeName: (ctx) => RecipeDetailScreen(_toggleFavorite, _isRecipeFavorite),
-        FiltersScreen.routeName: (ctx) => FiltersScreen(_filters, _setFilters),
         AboutScreen.routeName: (ctx) => AboutScreen(),
         RecipeStep.routeName: (ctx) => RecipeStep(Map<dynamic, dynamic>()),
         RecipeSearchScreen.routeName: (ctx) => RecipeSearchScreen(),
         //TestRecipeScreen.routeName: (ctx) => TestRecipeScreen(),
-    
       },
 
       onGenerateRoute: (settings) {
         print(settings.arguments);
         return MaterialPageRoute(
-          builder: (ctx) => TabsScreen(_favoritedRecipes),
+          builder: (ctx) => TabsScreen(),
         );
       },
 
       onUnknownRoute: (settings) {
         return MaterialPageRoute(
-          builder: (ctx) => TabsScreen(_favoritedRecipes),
+          builder: (ctx) => TabsScreen(),
         );
       },
     );
