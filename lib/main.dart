@@ -48,7 +48,8 @@ class _MyAppState extends State<MyApp> {
 
     //_loadModels();
     dal = new RecipeDAL(); 
-    dal.CreateDatabase();
+    //dal.CreateDatabase();
+
 
   }
 

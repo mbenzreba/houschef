@@ -18,9 +18,18 @@ class _AddRecipes extends State<AddRecipes> {
   @override
   
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Working on implementaion might get scraped'),
-    );
+    return Column(
+      children:  <Widget>[
+        Padding(
+          padding: EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                    ),
+         ),
+
+
+
+      ],);
   }
   
 

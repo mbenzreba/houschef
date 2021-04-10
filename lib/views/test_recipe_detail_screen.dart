@@ -6,7 +6,8 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 import '../views/recipe_step.dart';
 
-
+import '../dal/RecipeDAL.dart';
+import '../dal/RecipeDataModel.dart';
 
 
 
@@ -78,9 +79,6 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
     // );
     // 
     
-    print(incomingRecipe['steps']);
-    print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
-    print(incomingRecipe['ingredients']);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -154,13 +152,38 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
           backgroundColor: Colors.red,
           onTap: () {
             // logic for insert goes here 
+            String tempUrl = "";
+            String tempImageUrl = "";
+            String tempIng = "";
+
+            if (incomingRecipe['url'] != null)
+            {
+              tempUrl = incomingRecipe['url'];
+
+            }
+
+            if(incomingRecipe['imgUrl'] != null)
+            {
+              tempImageUrl = incomingRecipe['imgUrl'];
+            }
+
+            if (incomingRecipe['ingredients'] != null) {
+
+              tempIng = incomingRecipe["ingredients"];
+            }
+
+             RecipeDataModel model = new RecipeDataModel(title: incomingRecipe['title'], url: tempUrl, imgUrl: tempImageUrl, steps: incomingRecipe['steps'], ingredients: tempIng );
+             
+
+             
+            
           },
         ),
 
       ],),
 
 
-      
+
       // floatingActionButton: FloatingActionButton(
       //   child: Icon(
       //     isFavorite(recipeId) ? Icons.favorite : Icons.favorite_border,
