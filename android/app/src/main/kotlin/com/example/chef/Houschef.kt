@@ -81,7 +81,7 @@ class Houschef : Activity, TextToSpeech.OnInitListener {
                 if (utteranceId == "Cancel") {
                     listenForRequest(kRequestCodeConfirmation)
                 }
-                else if (utteranceId == "Out of Bounds" || utteranceId == "ingredient" || utteranceId == "step" || utteranceId == "Unrecognized" || utteranceId == "All Ingredients " + numOfIngredientsInStep || utteranceId == "Finished" || utteranceId == "No Temp" || utteranceId == "No Time" || utteranceId == "Time " + numOfIngredientsInStep || utteranceId == "Temp " + numOfIngredientsInStep) {
+                else if (utteranceId == "Out of Bounds" || utteranceId == "ingredient" || utteranceId == "step" || utteranceId == "Unrecognized" || utteranceId == "All Ingredients " + numOfIngredientsInStep || utteranceId == "Finished" || utteranceId == "No Temp" || utteranceId == "No Time" || utteranceId == "Time " + numOfIngredientsInStep || utteranceId == "Temp " + numOfIngredientsInStep || utteranceId == "No Ingredients") {
                     listenForRequest(kRequestCodeSpeechInput)
                 }
             }
@@ -178,6 +178,7 @@ class Houschef : Activity, TextToSpeech.OnInitListener {
                     speech.startListening(intent)
                 }
             }) */
+            speech.startListening(intent)
         }
         catch (e: Exception) {
             Log.e("Listen Error", e.message)
@@ -517,13 +518,13 @@ class Houschef : Activity, TextToSpeech.OnInitListener {
             alphaString.contains("one") -> {
                 convertedNum = 1
             }
-            alphaString.contains("two") || alphaString.contains("to") -> {
+            alphaString.contains("two") || alphaString.contains("to") || alphaString.contains("too") -> {
                 convertedNum = 2
             }
             alphaString.contains("three") -> {
                 convertedNum = 3
             }
-            alphaString.contains("for") -> {
+            alphaString.contains("for") || alphaString.contains("four") -> {
                 convertedNum = 4
             }
             alphaString.contains("five") -> {
