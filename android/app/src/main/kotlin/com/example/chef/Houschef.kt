@@ -84,9 +84,6 @@ class Houschef : Activity, TextToSpeech.OnInitListener {
                 else if (utteranceId == "Out of Bounds" || utteranceId == "ingredient" || utteranceId == "step" || utteranceId == "Unrecognized" || utteranceId == "All Ingredients " + numOfIngredientsInStep || utteranceId == "Finished" || utteranceId == "No Temp" || utteranceId == "No Time" || utteranceId == "Time " + numOfIngredientsInStep || utteranceId == "Temp " + numOfIngredientsInStep) {
                     listenForRequest(kRequestCodeSpeechInput)
                 }
-                else if (utteranceId == "YC") {
-                    // user cancels, exit to previous screen or shutoff voice
-                }
             }
 
             override fun onError(utteranceId: String) {}
@@ -212,7 +209,7 @@ class Houschef : Activity, TextToSpeech.OnInitListener {
                         listenForRequest(kRequestCodeSpeechInput)
                     }
                     // if the user responds with yes to the cancellation prompt,
-                    else if (result[0].toLowerCase() == "yes") {
+                    else if (result[0].toLowerCase().contains("yes") || result[0].toLowerCase().contains("yea")) {
                         tts.speak("Okay, cancelling recipe instructions.", TextToSpeech.QUEUE_ADD, null, "YC")
                     }
                 }
@@ -297,11 +294,8 @@ class Houschef : Activity, TextToSpeech.OnInitListener {
         else if (inputResult.contains("what is") && inputResult.contains("step")) {
             findStepNumber(inputResult, false, false)
         }
-        else if (inputResult.contains("time") || inputResult.contains("How long")) {
-
-        }
         // if the user indicates to have ingredients of a specific step read to them, the ingredients will be read to them
-        else if (inputResult.contains("what ingredients") && inputResult.contains("step")) {
+        else if (inputResult.contains("ingredients")) {
             findStepNumber(inputResult, false, true)
             isAllIngredientRequest = true
         }
