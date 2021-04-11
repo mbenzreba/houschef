@@ -83,11 +83,17 @@ class _AddRecipes extends State<AddRecipes> {
         children: [
 
         SpeedDialChild(
-          child: Icon(Icons.navigation),
+          child: Icon(Icons.favorite),
           label: "Start Recipe",
-          backgroundColor: Colors.green,
+          backgroundColor: Colors.blue,
           onTap: () {
-            RecipeDataModel model = new RecipeDataModel(title: title, url: '', imgUrl: '', steps: '', ingredients: '');
+            
+            if(this.title != null && this.steps != null){
+              RecipeDataModel model = new RecipeDataModel(title: this.title, url: '', imgUrl: '', steps: this.steps, ingredients: '');
+
+              WriteRecipe(model);
+            }
+
           }
         ),
         ],
