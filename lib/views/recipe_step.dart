@@ -137,13 +137,14 @@ class _RecipeStepState extends State<RecipeStep> {
             ),
             ),
 
+/*
             ElevatedButton(
               child: Text('Previous Step'), 
               onPressed: null),
 
             ElevatedButton(
             child: Text('Next Step'),
-            onPressed: _tellAssistant,),
+            onPressed: _tellAssistant,), */
 
             Center(
               child: ElevatedButton(
