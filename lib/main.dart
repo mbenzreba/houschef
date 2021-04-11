@@ -1,13 +1,12 @@
-import './views/test_recipe_detail_screen.dart';
 import 'package:flutter/material.dart';
-
+import './views/Add_recipe_screen.dart';
 
 
 
 import './views/about_screen.dart';
-import './views/recipe_detail_screen.dart';
+import './views/loading_screen.dart';
 import './views/tabs_screen.dart';
-import './models/recipes.dart'; 
+
 import './views/recipe_step.dart';
 import './views/recipe_search_screen.dart';
 
@@ -15,7 +14,7 @@ import './views/recipe_search_screen.dart';
 import 'package:flutter/services.dart';
 
 import './dal/RecipeDAL.dart';
-import './dal/RecipeDataModel.dart';
+
 
 void main() {
   runApp(MyApp());

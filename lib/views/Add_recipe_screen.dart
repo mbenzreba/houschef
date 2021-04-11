@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 
 // Import for MethodChannel
@@ -26,10 +24,37 @@ class _AddRecipes extends State<AddRecipes> {
                     vertical: 5,
                     ),
          ),
+         Padding(
+           padding: EdgeInsets.all(14),
+           child: TextField(
+            style: TextStyle(fontSize: 25),
+            //onSubmitted: ,
+            decoration: InputDecoration(labelText: 'Enter recipe name'), 
+            textInputAction: TextInputAction.done,
+          ),),
+
+          SizedBox(height: 50),
+
+          Expanded(
+            child: 
+            Padding(
+              padding: EdgeInsets.all(14),
+              child:TextField(
+            //onSubmitted: ,
+            style: TextStyle(fontSize: 25),
+            maxLines: 15,
+            decoration: InputDecoration(labelText: 'Enter your recipe'), 
+            textInputAction: TextInputAction.done,
+            keyboardType: TextInputType.multiline,
+            
+            ),)
+            
+          ),
 
 
-
-      ],);
+      ],
+      
+      );
   }
   
 
