@@ -47,7 +47,13 @@ class _RecipeStepState extends State<RecipeStep> {
 
   @override
   void initState() {
-    _startCooking(this.recipe["url"]);
+    if (this.recipe["url"] == "") {
+      _startCookingLocal();
+    }
+    else {
+      _startCooking(this.recipe["url"]);
+    }
+    
     _tellAssistant();
     timer = Timer.periodic(Duration(seconds: 2), (Timer t) => _getLatestStep());
   }
@@ -62,6 +68,19 @@ class _RecipeStepState extends State<RecipeStep> {
     Map<dynamic, dynamic> content = new Map<dynamic, dynamic>();
     try {
       content = await platform.invokeMethod('startCooking', recipeUrl);
+    } on PlatformException catch (e) {
+      content["step"] = "Failed to start cooking";
+    }
+
+    setState(() {
+      _currentStep = content["step"];
+    });
+  }
+
+  Future<void> _startCookingLocal() async {
+    Map<dynamic, dynamic> content = new Map<dynamic, dynamic>();
+    try {
+      content = await platform.invokeMethod('startCookingLocal');
     } on PlatformException catch (e) {
       content["step"] = "Failed to start cooking";
     }
