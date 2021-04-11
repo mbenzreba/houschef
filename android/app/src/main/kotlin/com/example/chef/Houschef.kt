@@ -282,11 +282,11 @@ class Houschef : Activity, TextToSpeech.OnInitListener {
             isAllIngredientRequest = true
         }
         // if the user indicates to go to a specific step, the current step will be set to the desired step to be read
-        else if (inputResult.contains("what is") && inputResult.contains("ingredient")) {
+        else if (inputResult.contains("what is") && inputResult.contains("ingredient") || inputResult.contains("get") && inputResult.contains("ingredient")) {
             findStepNumber(inputResult, true, false)
         }
         // if the user indicates to go to a specific step, the current step will be set to the desired step to be read
-        else if (inputResult.contains("what is") && inputResult.contains("step")) {
+        else if (inputResult.contains("what is") && inputResult.contains("step") || inputResult.contains("get") && inputResult.contains("step")) {
             findStepNumber(inputResult, false, false)
         }
         // if the user indicates to cancel the recipe guide, the recipe will end and the previous screen is displayed
