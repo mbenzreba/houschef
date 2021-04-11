@@ -87,12 +87,15 @@ class MainActivity: FlutterActivity() {
             }
         }
 
-        // Configure SEARCH_CHANNEL
+        // Configure LOAD_CHANNEL
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, LOAD_CHANNEL).setMethodCallHandler {
             call, result ->
             // Note: this method is invoked on the main thread.
             if (call.method == "loadModels") {
                 result.success(loadModels())
+            }
+            else if (call.method == "areModelsLoaded") {
+                result.success(loader.areModelsLoaded())
             }
             else if (call.method == "searchFullDetails") {
                 result.success(searchFullDetails(call.arguments))
@@ -301,6 +304,7 @@ class MainActivity: FlutterActivity() {
                 var recipe : HashMap<String, String> = HashMap<String, String>()
                 recipe.put("title", r.title!!)
                 recipe.put("url", r.url!!)
+                recipe.put("imgUrl", r.imgUrl!!)
 
                 outerHashMap.put(count, recipe)
                 count++

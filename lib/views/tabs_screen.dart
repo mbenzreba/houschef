@@ -44,7 +44,7 @@ class _TabsScreenState extends State<TabsScreen> {
       },
       {
         'page': AddRecipes(), 
-        'title': 'Recent',
+        'title': 'Add a Recipe',
       },
     ];
 
@@ -62,9 +62,11 @@ class _TabsScreenState extends State<TabsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black12,
+      
+        title: Text(_pages[_selectedPageIndex]['title'],
+        style: TextStyle(color: Colors.black),),
+        backgroundColor: Colors.blue,
         brightness: Brightness.dark,
-        title: Text(_pages[_selectedPageIndex]['title']),
       ),
       
     
@@ -75,7 +77,7 @@ class _TabsScreenState extends State<TabsScreen> {
 
       bottomNavigationBar: BottomNavigationBar(
         onTap: _selectPage,
-        backgroundColor: Colors.black12,
+        backgroundColor: Colors.blue,
         
         unselectedItemColor: Colors.white,
         selectedItemColor: Colors.black,
@@ -83,17 +85,17 @@ class _TabsScreenState extends State<TabsScreen> {
         type: BottomNavigationBarType.shifting,
         items: [
           BottomNavigationBarItem(
-            backgroundColor: Colors.black12,
+            backgroundColor: Colors.blue,
             icon: Icon(Icons.search), 
             label: 'Search',
           ),
           BottomNavigationBarItem(
-            backgroundColor: Colors.black12,
+            backgroundColor: Colors.blue,
             icon: Icon(Icons.favorite), 
             label: 'Favorites',
           ),
           BottomNavigationBarItem(
-            backgroundColor: Colors.black12,
+            backgroundColor: Colors.blue,
 
             icon: Icon(Icons.add), 
             label: 'Add a Recipe',

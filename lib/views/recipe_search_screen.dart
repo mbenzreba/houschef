@@ -91,7 +91,6 @@ class _RecipeSearcScreenState extends State<RecipeSearchScreen> {
     
 
     recipeMap.forEach((key, value) => urls.add(value['url']));
-    print(urls);
     if (recipeMap != null) {return ListView.builder(
       shrinkWrap: true,
         itemCount: recipeMap.length,
