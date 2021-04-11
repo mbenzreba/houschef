@@ -110,9 +110,9 @@ class MainActivity: FlutterActivity() {
     }
 
 
-    private fun getLatestStep() : HashMap<String, Any> {
+    private fun getLatestStep() : HashMap<Any, Any> {
         // Now return the map
-        var map: HashMap<String, Any> = HashMap<String, Any>()
+        var map: HashMap<Any, Any> = HashMap<Any, Any>()
         map.put("step", stepHolder.stepContents)
         map.put("highlights", stepHolder.stepHighlights)
 
