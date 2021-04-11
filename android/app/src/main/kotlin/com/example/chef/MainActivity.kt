@@ -67,6 +67,9 @@ class MainActivity: FlutterActivity() {
             else if (call.method == "getLatestStep") {
                 result.success(getLatestStep())
             }
+            else if (call.method == "cancelCooking") {
+                houschef = null
+            }
             else {
                 result.notImplemented()
             }

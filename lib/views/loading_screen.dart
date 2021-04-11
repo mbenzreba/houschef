@@ -1,12 +1,18 @@
+import 'dart:async';
+
+import 'package:chef/views/recipe_step.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 //import 'package:world_time_app/services/world_time.dart';
 
 
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Loading extends StatefulWidget {
+  final Map<dynamic,dynamic> recipe;
+  Loading(this.recipe);
   @override
-  _LoadingState createState() => _LoadingState();
+  _LoadingState createState() => _LoadingState(recipe);
 }
 
 class _LoadingState extends State<Loading> {
@@ -20,11 +26,44 @@ class _LoadingState extends State<Loading> {
   //     'time': instance.time
   //   });
   // }
+  // 
+  // 
+  
+  final Map<dynamic, dynamic>  recipe;
+  _LoadingState(this.recipe);
+
+  static const platform = const MethodChannel("com.example.chef/load");
+  bool areModelsLoaded = false;
+  Timer timer;
+
+  void _areModelsLoaded() async {
+    bool result;
+    try {
+      result = await platform.invokeMethod("areModelsLoaded") as bool;
+    } 
+    on PlatformException catch (e) {
+      result = false;
+    }
+
+    setState(() {
+      areModelsLoaded = result;
+      if (areModelsLoaded) {
+        Navigator.push(context, MaterialPageRoute(builder: (ctx) => RecipeStep(recipe)));
+      }
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     //setupWorldTime();
+    timer = Timer.periodic(Duration(seconds: 4), (Timer t) => _areModelsLoaded());
+  }
+
+  @override
+  void dispose() {
+    super.dispose;
+    timer.cancel();
   }
 
   @override
@@ -36,11 +75,23 @@ class _LoadingState extends State<Loading> {
      
       ),
       body: Center(
-      child: SpinKitRotatingCircle(
+
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          SpinKitRotatingCircle(
             color: Colors.white,
             size: 100.0,
             ),
-    ),);
+          Text(
+            "Getting everything ready...",
+          )
+        ]
+    ),
+    ),
+
+    );
     
   }
 }

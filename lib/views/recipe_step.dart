@@ -38,6 +38,8 @@ class _RecipeStepState extends State<RecipeStep> {
   String _currentStep = "";
   final Map<dynamic, dynamic>  recipe;
 
+  Map<String, dynamic> highlightMap;
+
   Timer timer;
 
   _RecipeStepState(this.recipe);
@@ -93,8 +95,25 @@ class _RecipeStepState extends State<RecipeStep> {
 
     setState(() {
       _currentStep = content["step"];
+      highlightMap = content;
     });
   }
+
+  Future<void> _cancelCooking() async {
+    try {
+      await platform.invokeMethod('cancelCooking');
+    } on PlatformException catch (e) {
+      // ...
+    }
+
+    setState(() {
+      Navigator.push(context, MaterialPageRoute(builder: (ctx) => RecipeStep(recipe)));
+    });
+  }
+
+
+  
+
 
 
   @override
@@ -110,10 +129,13 @@ class _RecipeStepState extends State<RecipeStep> {
       children: <Widget>[
         Container(
           padding: EdgeInsets.all(20),
-            child: Text(
+            child: Center(
+              child: Text(
               _currentStep, 
               style: Theme.of(context).textTheme.headline6,
-            ),),
+            ),
+            ),
+            ),
 
             ElevatedButton(
               child: Text('Previous Step'), 
@@ -123,9 +145,11 @@ class _RecipeStepState extends State<RecipeStep> {
             child: Text('Next Step'),
             onPressed: _tellAssistant,),
 
-            ElevatedButton(
+            Center(
+              child: ElevatedButton(
               child: Text('Cancel'),
-              onPressed: null),  
+              onPressed: _cancelCooking),),
+
       ],
     )
     ); 
