@@ -28,6 +28,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   List<RecipeDataModel> list;
 
+  Timer timer;
 
 
   @override
@@ -42,8 +43,8 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     else {
       return ListView.builder(
         itemBuilder: (ctx, index) {
-        return Text('Recipe'); 
-          
+        return Text(list[index].title); 
+        
       }, 
       itemCount: list.length,
       );
@@ -58,11 +59,21 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
     super.initState();
     list = new List<RecipeDataModel>();
+
     GetData();
 
+    timer = Timer.periodic(Duration(seconds: 1), (Timer t) => GetLatestData());
 
   }
- 
+  
+  void GetLatestData(){
+
+    setState(() {
+      if(!list.isEmpty){
+        list = list;
+      }
+    });
+  }
 
   Future<void> GetData() async {
 
@@ -71,10 +82,5 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     await dal.Connect();
 
     list = await dal.getRecipes();
-    
-    
   }
-
-
-
 }

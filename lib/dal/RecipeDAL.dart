@@ -48,8 +48,10 @@ class RecipeDAL {
 
   // Define a function that inserts dogs into the database
   Future<void> insertRecipe(RecipeDataModel recipeDataModel) async {
-  
+    
     final Database tempDb = await db; 
+
+    await this.Connect();
 
     await tempDb.insert(
       'recipes',
@@ -66,6 +68,10 @@ class RecipeDAL {
 
     // Query the table for all The Recipes.
     final List<Map<String, dynamic>> maps = await tempDb.query('recipes');
+
+    Set<Map> set = new Set.from(maps);
+    set.forEach((maps) => print(maps.toString()));   
+
 
     // Convert the List<Map<String, dynamic> into a List<>.
     return List.generate(maps.length, (i) {

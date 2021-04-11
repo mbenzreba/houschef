@@ -155,11 +155,11 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
             String tempUrl = "";
             String tempImageUrl = "";
             String tempIng = "";
+            String tempSteps = "";
 
             if (incomingRecipe['url'] != null)
             {
               tempUrl = incomingRecipe['url'];
-
             }
 
             if(incomingRecipe['imgUrl'] != null)
@@ -169,13 +169,37 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
 
             if (incomingRecipe['ingredients'] != null) {
 
-              tempIng = incomingRecipe["ingredients"];
+              String tmp = "";
+              if(incomingRecipe['ingredients'] is List){
+
+                
+                for(int i = 0; i < incomingRecipe['ingredients'].length; i++){
+
+                  tmp = tmp + incomingRecipe['ingredients'][i] + "^";
+                }
+              }
+              
+              tempIng = tmp;
             }
 
-             RecipeDataModel model = new RecipeDataModel(title: incomingRecipe['title'], url: tempUrl, imgUrl: tempImageUrl, steps: incomingRecipe['steps'], ingredients: tempIng );
-             
+            if (incomingRecipe['steps'] != null) {
 
-             
+              String tmp = "";
+              if(incomingRecipe['steps'] is List){
+
+                
+                for(int i = 0; i < incomingRecipe['steps'].length; i++){
+
+                  tmp = tmp + incomingRecipe['steps'][i] + "^";
+                }
+              }
+              
+              tempSteps = tmp;
+            }
+
+            RecipeDataModel model = new RecipeDataModel(title: this.title, url: tempUrl, imgUrl: tempImageUrl, steps: tempSteps, ingredients: tempIng );
+            
+            WriteRecipe(model);
             
           },
         ),
@@ -191,5 +215,16 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
       //   onPressed: () => toggleFavorite(recipeId),
       // ),
     );
+  }
+
+  Future<void> WriteRecipe(RecipeDataModel model) async {
+
+    RecipeDAL dal = new RecipeDAL();
+    
+    await dal.Connect();
+
+    await dal.insertRecipe(model);
+    
+    await dal.getRecipes();
   }
 }
