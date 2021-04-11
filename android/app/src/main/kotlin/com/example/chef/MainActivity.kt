@@ -388,15 +388,9 @@ class MainActivity: FlutterActivity() {
 
     private fun loadModels(): Boolean {
         
-        GlobalScope.launch(newSingleThreadContext("SentenceDetectorThread")) {
+        GlobalScope.launch(newSingleThreadContext("LoadModelsThread")) {
             loader.loadSentenceDetector()
-        }
-
-        GlobalScope.launch(newSingleThreadContext("TokenizerThread")) {
             loader.loadTokenizer()
-        }
-
-        GlobalScope.launch(newSingleThreadContext("ParserThread")) {
             loader.loadParser()
         }
 

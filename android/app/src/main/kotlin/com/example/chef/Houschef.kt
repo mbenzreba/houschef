@@ -3,30 +3,36 @@ package com.example.chef
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
+import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.tts.TextToSpeech
+import android.speech.SpeechRecognizer
 import android.speech.tts.UtteranceProgressListener
 import android.util.Log
-import android.widget.Toast
 import java.util.*
 
-class Houschef : Activity {
+class Houschef : Activity, TextToSpeech.OnInitListener {
     private lateinit var tts:TextToSpeech // a TextToSpeech object used to have text read to the user
+    private lateinit var speech:SpeechRecognizer
 
     var ingredients:List<String> // the list of ingredients of the recipe
     var ingredientStep:Int = -1 // the current ingredient that the user is on of the recipe
     var finishedIngredients:Boolean = false // keeps track if the assistant will read ingredients
     var isPrevRequest:Boolean = false // keeps track if the current request made is a request for a previous step/ingredient
 
+    var isOneIngredientRequest:Boolean = false
+    var isListIngredientRequest:Boolean = false
+
     var instructions:List<String> // recipe instructions that will be read to the user
     var currentStep:Int = -1  // the current step that the user is on of the recipe
-
 
     var isAllIngredientRequest:Boolean = false
     var allIngredientsStep:Int = -1
     var numOfIngredientsInStep:Int = -1
 
     var isTimeRequest:Boolean = false
+    var isTempRequest:Boolean = false
 
     var unrecognizedRequest:Boolean = false // keeps track if user responded with an unrecognized command
     var cancelRequest:Boolean = false // keeps track if the user responded with a cancel command
@@ -78,15 +84,72 @@ class Houschef : Activity {
                 if (utteranceId == "Cancel") {
                     listenForRequest(kRequestCodeConfirmation)
                 }
-                else if (utteranceId == "Out of Bounds" || utteranceId == "ingredient" || utteranceId == "step" || utteranceId == "Unrecognized"
-                    || utteranceId == "All Ingredients " + numOfIngredientsInStep || utteranceId == "Finished") {
+                else if (utteranceId == "Out of Bounds" || utteranceId == "ingredient" || utteranceId == "step" || utteranceId == "Unrecognized" || utteranceId == "All Ingredients " + numOfIngredientsInStep || utteranceId == "Finished" || utteranceId == "No Temp" || utteranceId == "No Time" || utteranceId == "Time " + numOfIngredientsInStep || utteranceId == "Temp " + numOfIngredientsInStep || utteranceId == "No Ingredients" 
+                || utteranceId == "DoneList" ) {
                     listenForRequest(kRequestCodeSpeechInput)
                 }
-
             }
 
             override fun onError(utteranceId: String) {}
             override fun onStart(utteranceId: String) {}
+        })
+
+        speech = SpeechRecognizer.createSpeechRecognizer(currentContext)
+        speech.setRecognitionListener(object: RecognitionListener {
+            override fun onReadyForSpeech(params: Bundle?) {
+
+            }
+
+            override fun onBufferReceived(buffer: ByteArray?) {
+
+            }
+
+            override fun onEndOfSpeech() {
+
+            }
+
+            override fun onPartialResults(partialResults: Bundle?) {
+
+            }
+
+            override fun onError(error: Int) {
+                tts.speak(error.toString(), TextToSpeech.QUEUE_ADD, null)
+
+                when {
+                    // error 7: got input but cant determine it, reprompts user for input
+                    error == 7 -> {
+                        tts.speak("Unable to recognize request, please try again.", TextToSpeech.QUEUE_FLUSH, null, "Unrecognized")
+                    }
+                    // error 1: lost network connection
+                    error == 1 -> {
+
+                    }
+                    // error 6: went too long without any input, will sleep for 1 second and reprompt for input
+                    error == 6 -> {
+                        Thread.sleep(1000)
+                        listenForRequest(100)
+                    }
+                }
+            }
+
+            override fun onEvent(eventType: Int, params: Bundle?) {
+
+            }
+
+            override fun onResults(results: Bundle?) {
+                val result = results!!.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+
+                determineRequest(result!![0].toLowerCase())
+                processRequest()
+            }
+
+            override fun onRmsChanged(rmsdB: Float) {
+
+            }
+
+            override fun onBeginningOfSpeech() {
+
+            }
         })
     }
 
@@ -113,9 +176,15 @@ class Houschef : Activity {
 
         try {
             currentActivity.startActivityForResult(intent, listenCode)
+            /* 
+            currentActivity.runOnUiThread(object: Runnable {
+                override fun run() {
+                    speech.startListening(intent)
+                }
+            }) */
         }
         catch (e: Exception) {
-            Toast.makeText(currentContext, e.message, Toast.LENGTH_SHORT).show()
+            Log.e("Listen Error", e.message)
         }
     }
 
@@ -141,12 +210,12 @@ class Houschef : Activity {
 
                     // if the user response is no to the cancellation prompt, the recipe will continue being read
                     if (result[0].toLowerCase() == "no") {
-                        tts.speak("Okay, returning to recipe instructions", TextToSpeech.QUEUE_ADD, null)
+                        tts.speak("Okay, returning to recipe instructions", TextToSpeech.QUEUE_ADD, null, "Unrecognized")
                         listenForRequest(kRequestCodeSpeechInput)
                     }
                     // if the user responds with yes to the cancellation prompt,
-                    else if (result[0].toLowerCase() == "yes") {
-                        tts.speak("Okay, cancelling recipe instructions.", TextToSpeech.QUEUE_ADD, null)
+                    else if (result[0].toLowerCase().contains("yes") || result[0].toLowerCase().contains("yea")) {
+                        tts.speak("Okay, cancelling recipe instructions.", TextToSpeech.QUEUE_ADD, null, "YC")
                     }
                 }
             }
@@ -161,18 +230,10 @@ class Houschef : Activity {
     // Return:      N/A
     private fun determineRequest(inputResult: String) {
         // if the user indicates to go to the next step of the instructions, the current step counter is incremented
-        if (inputResult.contains("next"))
+        if (inputResult.contains("next") || inputResult.contains("proceed"))
         {
-            // if the ingredients have not been finished being read to the user, the current ingredient counter is incremented
-            if (!finishedIngredients) {
-                ingredientStep += 1
-            }
-            // else, the step counter of the recipe is incremented
-            else {
-                // if the current step has not exceeded the amount of steps in the recipe, it will be incremented
-                if (currentStep != recipe.smartSteps!!.size) {
-                    currentStep += 1
-                }
+            if (currentStep != recipe.smartSteps!!.size) {
+                currentStep += 1
             }
 
             isPrevRequest = false
@@ -180,54 +241,43 @@ class Houschef : Activity {
         // if the user indicates to go to the previous step of the instructions, the current step counter is decremented
         else if (inputResult.contains("previous") || inputResult.contains("last"))
         {
-            // if all ingredients have not been read to the user, the ingredient to read is decremented
-            if (!finishedIngredients) {
-                // if no ingredients have been read to the user, the ingredient to read will be set to the first ingredient
-                if (ingredientStep == -1) {
-                    ingredientStep = 0
-                }
-
-                // if the current ingredient is not the first, it will be decremented
-                if (ingredientStep != 0) {
-                    ingredientStep -= 1
-                }
-            }
-            // else, the current step of the recipe is decremented
-            else {
+            if (currentStep > 0) {
                 currentStep -= 1
-
-                // if the current step is set to a non-existent step, finishedIngredients is set to false
-                // to begin reading ingredients again
-                if (currentStep == -1) {
-                    finishedIngredients = false
-                }
+            }
+            else if (currentStep == -1) {
+                currentStep = 0
             }
 
             isPrevRequest = true
         }
         // if the user indicates to have the last read step to be repeated, the current step stays the same
         else if (inputResult.contains("repeat")) {
-
-            if (!finishedIngredients) {
-                if (ingredientStep == -1) {
-                    ingredientStep = 0
-                }
+            if (currentStep == -1) {
+                currentStep = 0
             }
         }
-
+        else if (inputResult.contains("temperature")) {
+            findStepNumber(inputResult, false, true)
+            isTempRequest = true
+        }
+        else if (inputResult.contains("time") || inputResult.contains("how long")) {
+            findStepNumber(inputResult, false, true)
+            isTimeRequest = true
+        }
         // if the user indicates to go to a specific step, the current step will be set to the desired step to be read
         else if (inputResult.contains("what is") && inputResult.contains("ingredient")) {
             findStepNumber(inputResult, true, false)
+            isOneIngredientRequest = true
         }
         // if the user indicates to go to a specific step, the current step will be set to the desired step to be read
         else if (inputResult.contains("what is") && inputResult.contains("step")) {
             findStepNumber(inputResult, false, false)
         }
-        else if (inputResult.contains("time") || inputResult.contains("How long")) {
-
+        else if (inputResult.contains("list all") && inputResult.contains("ingredient")) {
+            isListIngredientRequest = true
         }
         // if the user indicates to have ingredients of a specific step read to them, the ingredients will be read to them
-        else if (inputResult.contains("what ingredients") && inputResult.contains("step")) {
+        else if (inputResult.contains("ingredients")) {
             findStepNumber(inputResult, false, true)
             isAllIngredientRequest = true
         }
@@ -284,9 +334,15 @@ class Houschef : Activity {
                 var ingredientsInStep: MutableList<String> = this.recipe.smartSteps!!.get(allIngredientsStep).tree.getFulfillsForTarget("ingredient")
                 numOfIngredientsInStep = ingredientsInStep.size
                 var ingredientNumber: Int = 1
-                for (ingredient in ingredientsInStep) {
-                    tts.speak(ingredient, TextToSpeech.QUEUE_ADD, null, "All Ingredients " + ingredientNumber)
-                    ingredientNumber += 1
+
+                if (numOfIngredientsInStep > 0) {
+                    for (ingredient in ingredientsInStep) {
+                        tts.speak(ingredient, TextToSpeech.QUEUE_ADD, null, "All Ingredients " + ingredientNumber)
+                        ingredientNumber += 1
+                    }
+                }
+                else {
+                    tts.speak("The requested step does not require any ingredients.", TextToSpeech.QUEUE_ADD, null, "No Ingredients")   
                 }
 
                 /* 
@@ -299,25 +355,66 @@ class Houschef : Activity {
 
                 isAllIngredientRequest = false
             }
-            // else, the requested step is read to the user
-            else {
-                // if the recipe has not finished listing ingredients, an ingredient is read to the user
-                if (!finishedIngredients) {
-                    // tts.speak(ingredients[ingredientStep], TextToSpeech.QUEUE_FLUSH, null, "ingredient")
-                    tts.speak(recipe.ingredients!!.get(ingredientStep), TextToSpeech.QUEUE_FLUSH, null, "ingredient")
+            else if (isTempRequest) {
+                // TODO: Handle case for multiple temperatures (appropriate voice assistant response/prompt)
+                var temperatureStrings = this.recipe.smartSteps!!.get(allIngredientsStep).tree.getFulfillsForTarget("temperature")
 
-                    // if the current ingredient step is the and the last request made was for a previous step,
-                    // finishedIngredients is set to true
-                    if (ingredientStep == recipe.ingredients!!.size - 1 && !isPrevRequest) {
-                        finishedIngredients = true
+                var temperatureNum:Int = 1
+                numOfIngredientsInStep = temperatureStrings.size
+
+                if (temperatureStrings.size > 0) {
+                    for (temperature in temperatureStrings) {
+                        tts.speak(temperature, TextToSpeech.QUEUE_ADD, null, "Temp " + temperatureNum)
+                        temperatureNum += 1
                     }
                 }
-                // else, a step is read to the user
                 else {
-                    // tts.speak(instructions[currentStep], TextToSpeech.QUEUE_FLUSH, null, "step")
-                    tts.speak(recipe.smartSteps!!.get(currentStep).tree.getSentence(), TextToSpeech.QUEUE_FLUSH, null, "step")
-                    this.stepHolder.stepContents = recipe.smartSteps!!.get(currentStep).tree.getSentence()
+                    tts.speak("The requested step does not require a temperature.", TextToSpeech.QUEUE_ADD, null, "No Temp")
                 }
+                
+                isTempRequest = false
+            }
+            else if (isTimeRequest) {
+                var timeStrings = this.recipe.smartSteps!!.get(allIngredientsStep).tree.getFulfillsForTarget("time")
+
+                var timeNum:Int = 1
+                numOfIngredientsInStep = timeStrings.size
+
+                if (timeStrings.size > 0) {
+                    for (time in timeStrings) {
+                        tts.speak(time, TextToSpeech.QUEUE_ADD, null, "Time " + timeNum)
+                        timeNum += 1
+                    }
+                }
+                else {
+                    tts.speak("The requested step does have a time requirement", TextToSpeech.QUEUE_ADD, null, "No Temp")
+                }
+                
+                isTimeRequest = false
+            }
+            else if (isOneIngredientRequest) {
+                tts.speak(recipe.ingredients!!.get(ingredientStep), TextToSpeech.QUEUE_FLUSH, null, "ingredient")
+                isOneIngredientRequest = false
+            }
+            else if (isListIngredientRequest) {
+                var listOfIngredients = recipe.ingredients
+                var ingredientsSize = listOfIngredients!!.size
+
+                for (ingredient in listOfIngredients) {
+                    Thread.sleep(1000)
+                    
+                    if (listOfIngredients[ingredientsSize - 1] == ingredient) {
+                        tts.speak(ingredient, TextToSpeech.QUEUE_ADD, null, "DoneList")
+                    }
+                    else {
+                        tts.speak(ingredient, TextToSpeech.QUEUE_ADD, null, "Listing")
+                    }
+                }
+            }
+            // else, the requested step is read to the user
+            else {
+                tts.speak(recipe.smartSteps!!.get(currentStep).tree.getSentence(), TextToSpeech.QUEUE_FLUSH, null, "step")
+                this.stepHolder.stepContents = recipe.smartSteps!!.get(currentStep).tree.getSentence()
             }
         }
         // if the current recipe has been cancelled, a prompt to confirm the cancellation is asked
@@ -344,14 +441,6 @@ class Houschef : Activity {
         if (newStep == -1) {
             try {
                 newStep = match?.value!!.toInt()
-
-                // if the requested step is greater than the amount of steps in the recipe,
-                // an exception is thrown
-                if (newStep > recipe.smartSteps!!.size) {
-                    throw Exception("Invalid Step")
-                }
-
-                currentStep = newStep - 1
             }
             catch (e: Exception) {
                 unrecognizedRequest = true
@@ -359,31 +448,32 @@ class Houschef : Activity {
         }
 
         // if the request is recognizable, the ingredient/step number will be altered to the requested number
-        if (!unrecognizedRequest) {
+        if (!unrecognizedRequest && !isAllIngredientRequest) {
             if (isIngredientRequest) {
-                if (newStep <= recipe.ingredients!!.size && newStep > 0) {
+                if (newStep <= ingredients.size && newStep > 0) {
                     ingredientStep = newStep - 1
                     finishedIngredients = false
-                    currentStep = -1
                 } else {
                     requestOutOfBounds = true
                 }
             }
             else {
-                if (newStep <= recipe.smartSteps!!.size && newStep > 0) {
-
-                    if (isAllIngredientRequest) {
-                        allIngredientsStep = newStep - 1
-                    }
-                    else {
-                        currentStep = newStep - 1
-                    }
-
+                if (newStep <= instructions.size && newStep > 0) {
+                    currentStep = newStep - 1
                     finishedIngredients = true
                     ingredientStep = ingredients.size - 1
                 } else {
                     requestOutOfBounds = true;
                 }
+            }
+        }
+        else if (isAllIngredientRequest) {
+            if (unrecognizedRequest && currentStep > -1) {
+                allIngredientsStep = currentStep
+                unrecognizedRequest = false
+            }
+            else if (!unrecognizedRequest) {
+                allIngredientsStep = newStep - 1
             }
         }
     }
@@ -403,13 +493,13 @@ class Houschef : Activity {
             alphaString.contains("one") -> {
                 convertedNum = 1
             }
-            alphaString.contains("two") || alphaString.contains("to") -> {
+            alphaString.contains("two") || alphaString.contains("to") || alphaString.contains("too") -> {
                 convertedNum = 2
             }
             alphaString.contains("three") -> {
                 convertedNum = 3
             }
-            alphaString.contains("for") -> {
+            alphaString.contains("for") || alphaString.contains("four") -> {
                 convertedNum = 4
             }
             alphaString.contains("five") -> {
@@ -430,5 +520,19 @@ class Houschef : Activity {
         }
 
         return convertedNum
+    }
+
+    override fun onInit(status: Int) {
+
+    }
+
+    override fun onDestroy() {
+        //Close the Text to Speech Library
+        if(tts != null) {
+
+            tts.stop();
+            tts.shutdown();
+        }
+        super.onDestroy()
     }
 }
