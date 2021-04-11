@@ -48,6 +48,7 @@ class _LoadingState extends State<Loading> {
     setState(() {
       areModelsLoaded = result;
       if (areModelsLoaded) {
+        timer.cancel();
         Navigator.push(context, MaterialPageRoute(builder: (ctx) => RecipeStep(recipe)));
       }
     });

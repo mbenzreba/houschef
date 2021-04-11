@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:async';
 
 import 'package:chef/models/recipes.dart';
+import 'package:chef/views/test_recipe_detail_screen.dart';
 import 'package:flutter/material.dart';
 
 
@@ -95,8 +96,13 @@ class _RecipeStepState extends State<RecipeStep> {
 
     setState(() {
       _currentStep = content["step"];
-      highlightMap = content;
     });
+    
+    /*
+    setState(() {
+      _currentStep = content["step"];
+      // highlightMap = content;
+    }); */
   }
 
   Future<void> _cancelCooking() async {
@@ -107,7 +113,7 @@ class _RecipeStepState extends State<RecipeStep> {
     }
 
     setState(() {
-      Navigator.push(context, MaterialPageRoute(builder: (ctx) => RecipeStep(recipe)));
+      Navigator.push(context, MaterialPageRoute(builder: (ctx) => TestRecipeScreen()));
     });
   }
 
@@ -149,7 +155,8 @@ class _RecipeStepState extends State<RecipeStep> {
             Center(
               child: ElevatedButton(
               child: Text('Cancel'),
-              onPressed: _cancelCooking),),
+              onPressed: _cancelCooking),
+              ),
 
       ],
     )
