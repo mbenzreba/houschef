@@ -49,6 +49,12 @@ class _RecipeStepState extends State<RecipeStep> {
     timer = Timer.periodic(Duration(seconds: 2), (Timer t) => _getLatestStep());
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    timer.cancel();
+  }
+
   Future<void> _startCooking(String recipeUrl) async {
     Map<dynamic, dynamic> content = new Map<dynamic, dynamic>();
     try {

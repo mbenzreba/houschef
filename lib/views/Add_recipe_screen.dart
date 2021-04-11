@@ -20,6 +20,14 @@ class _AddRecipes extends State<AddRecipes> {
   String title;
   String steps;
 
+  TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
 
   Future<void> WriteRecipe(RecipeDataModel model) async {
 
@@ -30,6 +38,16 @@ class _AddRecipes extends State<AddRecipes> {
             await dal.insertRecipe(model);
 
             await dal.getRecipes();
+  }
+
+  void saveSteps(String value) {
+    steps = value;
+    print("Saved our steps!!");
+  }
+
+  void saveTitle(String value) {
+    title = value;
+    print("Saved our title!!");
   }
 
   @override
@@ -48,7 +66,7 @@ class _AddRecipes extends State<AddRecipes> {
            padding: EdgeInsets.all(14),
            child: TextField(
             style: TextStyle(fontSize: 25),
-            onSubmitted: (value) => title,
+            onSubmitted: saveTitle,
             decoration: InputDecoration(labelText: 'Enter recipe name'), 
             textInputAction: TextInputAction.done,
           ),),
@@ -60,7 +78,7 @@ class _AddRecipes extends State<AddRecipes> {
             Padding(
               padding: EdgeInsets.all(14),
               child:TextField(
-              onSubmitted: (value) => steps,
+              onSubmitted: saveSteps,
             style: TextStyle(fontSize: 25),
             maxLines: 15,
             decoration: InputDecoration(labelText: 'Enter your recipe'), 
@@ -84,7 +102,7 @@ class _AddRecipes extends State<AddRecipes> {
 
         SpeedDialChild(
           child: Icon(Icons.favorite),
-          label: "Start Recipe",
+          label: "Favourite this recipe",
           backgroundColor: Colors.blue,
           onTap: () {
             

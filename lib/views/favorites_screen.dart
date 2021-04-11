@@ -30,6 +30,12 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   Timer timer;
 
+  @override
+  void dispose() {
+    super.dispose();
+    timer.cancel();
+  }
+
 
   @override
   Widget build(BuildContext context) {
