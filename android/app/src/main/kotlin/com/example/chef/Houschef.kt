@@ -171,12 +171,13 @@ class Houschef : Activity, TextToSpeech.OnInitListener {
         }
 
         try {
-            //currentActivity.startActivityForResult(intent, listenCode)
+            currentActivity.startActivityForResult(intent, listenCode)
+            /* 
             currentActivity.runOnUiThread(object: Runnable {
                 override fun run() {
                     speech.startListening(intent)
                 }
-            })
+            }) */
         }
         catch (e: Exception) {
             Log.e("Listen Error", e.message)
