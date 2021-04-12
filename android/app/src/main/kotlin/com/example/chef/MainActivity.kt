@@ -67,10 +67,12 @@ class MainActivity: FlutterActivity() {
             else if (call.method == "getLatestStep") {
                 result.success(getLatestStep())
             }
-            /*
+            else if (call.method == "startCookingLocal") {
+                result.success(startCookingLocal())
+            }
             else if (call.method == "cancelCooking") {
                 houschef = null
-            } */
+            }
             else {
                 result.notImplemented()
             }
@@ -120,6 +122,56 @@ class MainActivity: FlutterActivity() {
         return map
     }
 
+    
+    private fun startCookingLocal() : HashMap<String, Any> {
+
+        // TODO: Write the actual function
+        // Scrape the recipe from the url and get the details
+        // Save these details to some SmartRecipe.kt
+        // Inside SmartRecipe, do what you have to do...
+        // Then, return the first step from SmartRecipe as a plain string!!
+        currentlyCooking = Recipe()
+
+        
+        
+
+        // Use Recipe to populate the SmartSteps it keeps track of
+
+        // OpenNLP 
+        /* var pp: PreParser = PreParser() */
+        var rawRecipe: String = ""
+
+        // Construct entire recipe as one whole string
+        for (step in currentlyCooking.steps!!) {
+            rawRecipe = rawRecipe + " " + step
+        }
+
+        var parses: MutableList<String> = mutableListOf()
+        
+
+        parses = loader.rawToParses(rawRecipe)
+
+        for (parse in parses) {
+            // Add it to the recipe (r) as a SmartStep
+            var ss: SmartStep = SmartStep()
+            ss.tree = RecipeWordTreeArborist.get().createTree(parse)
+            currentlyCooking.smartSteps?.add(ss!!)
+        }
+        
+        
+        
+
+
+        currentStep = 0
+
+        // Now return the map
+        var map: HashMap<String, Any> = HashMap<String, Any>()
+        stepHolder.stepContents = currentlyCooking.smartSteps!!.get(0).tree.getSentence()
+        map.put("step", stepHolder.stepContents)
+        map.put("highlights", stepHolder.stepHighlights)
+
+        return map
+    }
 
 
     /**
