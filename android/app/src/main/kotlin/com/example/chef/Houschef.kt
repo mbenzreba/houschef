@@ -1,3 +1,9 @@
+// Class       : Houschef
+// Description : The Houschef class encapsulates the voice assistant of the Houschef application.
+//               Keeps track of the current step that the user is on and allows voice input for them
+//               to navigate forward and backwards throughout the recipe, as well as request specific
+//               ingredients, temperature requirements, and time requirements for the recipe.
+
 package com.example.chef
 
 import android.app.Activity
@@ -14,25 +20,25 @@ import java.util.*
 
 class Houschef : Activity, TextToSpeech.OnInitListener {
     private lateinit var tts:TextToSpeech // a TextToSpeech object used to have text read to the user
-    private lateinit var speech:SpeechRecognizer
+    private lateinit var speech:SpeechRecognizer // SpeechRecognizer object used to setup a custom recognizer intent
 
     var ingredients:List<String> // the list of ingredients of the recipe
     var ingredientStep:Int = -1 // the current ingredient that the user is on of the recipe
     var finishedIngredients:Boolean = false // keeps track if the assistant will read ingredients
     var isPrevRequest:Boolean = false // keeps track if the current request made is a request for a previous step/ingredient
 
-    var isOneIngredientRequest:Boolean = false
-    var isListIngredientRequest:Boolean = false
+    var isOneIngredientRequest:Boolean = false // used to determine that the user requested a single ingredient
+    var isListIngredientRequest:Boolean = false // used to determine that the user requested the list of ingredients
 
     var instructions:List<String> // recipe instructions that will be read to the user
     var currentStep:Int = -1  // the current step that the user is on of the recipe
 
-    var isAllIngredientRequest:Boolean = false
-    var allIngredientsStep:Int = -1
-    var numOfIngredientsInStep:Int = -1
+    var isAllIngredientRequest:Boolean = false // used to determine that the user requested all ingredients from a step
+    var allIngredientsStep:Int = -1 // keeps track of which step the user would like the ingredients to be retireved from
+    var numOfIngredientsInStep:Int = -1 // keeps track of the number of ingredients in a step
 
-    var isTimeRequest:Boolean = false
-    var isTempRequest:Boolean = false
+    var isTimeRequest:Boolean = false // used to determine that the user requested the time for a specific step
+    var isTempRequest:Boolean = false // used to determine that the user requested the temperature for a specific step
 
     var unrecognizedRequest:Boolean = false // keeps track if user responded with an unrecognized command
     var cancelRequest:Boolean = false // keeps track if the user responded with a cancel command
