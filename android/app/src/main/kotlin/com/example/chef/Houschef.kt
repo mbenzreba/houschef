@@ -265,29 +265,21 @@ class Houschef : Activity, TextToSpeech.OnInitListener {
             isTimeRequest = true
         }
         // if the user indicates to go to a specific step, the current step will be set to the desired step to be read
-        else if (inputResult.contains("what is") && inputResult.contains("ingredient")) {
+        else if (inputResult.contains("what is") && inputResult.contains("ingredient") || inputResult.contains("get") && inputResult.contains("ingredient") || inputResult.contains("grab") && inputResult.contains("ingredient")) {
             findStepNumber(inputResult, true, false)
             isOneIngredientRequest = true
         }
         // if the user indicates to go to a specific step, the current step will be set to the desired step to be read
-        else if (inputResult.contains("what is") && inputResult.contains("step")) {
+        else if (inputResult.contains("what is") && inputResult.contains("step") || inputResult.contains("get") && inputResult.contains("step") || inputResult.contains("grab") && inputResult.contains("step")) {
             findStepNumber(inputResult, false, false)
         }
-        else if (inputResult.contains("list all") && inputResult.contains("ingredient")) {
+        else if (inputResult.contains("list") && inputResult.contains("ingredient") && inputResult.contains("all")) {
             isListIngredientRequest = true
         }
         // if the user indicates to have ingredients of a specific step read to them, the ingredients will be read to them
         else if (inputResult.contains("ingredients")) {
             findStepNumber(inputResult, false, true)
             isAllIngredientRequest = true
-        }
-        // if the user indicates to go to a specific step, the current step will be set to the desired step to be read
-        else if (inputResult.contains("what is") && inputResult.contains("ingredient") || inputResult.contains("get") && inputResult.contains("ingredient") || inputResult.contains("grab") && inputResult.contains("ingredient")) {
-            findStepNumber(inputResult, true, false)
-        }
-        // if the user indicates to go to a specific step, the current step will be set to the desired step to be read
-        else if (inputResult.contains("what is") && inputResult.contains("step") || inputResult.contains("get") && inputResult.contains("step") || inputResult.contains("grab") && inputResult.contains("step")) {
-            findStepNumber(inputResult, false, false)
         }
         // if the user indicates to cancel the recipe guide, the recipe will end and the previous screen is displayed
         else if (inputResult.contains("cancel")) {

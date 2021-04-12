@@ -2,11 +2,18 @@ import 'dart:async';
 
 import 'package:chef/views/recipe_step.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
+import 'dart:async';
 import 'package:flutter/services.dart';
 //import 'package:world_time_app/services/world_time.dart';
 
 
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+
+// Import for MethodChannel
+import 'package:flutter/services.dart';
+
+import '../dal/RecipeDAL.dart';
 
 class Loading extends StatefulWidget {
   final Map<dynamic,dynamic> recipe;
@@ -17,17 +24,7 @@ class Loading extends StatefulWidget {
 
 class _LoadingState extends State<Loading> {
 
-  // void setupWorldTime() async {
-  //   WorldTime instance = WorldTime(location: 'Berlin', flag: 'germany.png', url: 'Europe/Berlin');
-  //   await instance.getTime();
-  //   Navigator.pushReplacementNamed(context, '/home', arguments: {
-  //     'location': instance.location,
-  //     'flag': instance.flag,
-  //     'time': instance.time
-  //   });
-  // }
-  // 
-  // 
+
   
   final Map<dynamic, dynamic>  recipe;
   _LoadingState(this.recipe);
@@ -57,7 +54,7 @@ class _LoadingState extends State<Loading> {
   @override
   void initState() {
     super.initState();
-    //setupWorldTime();
+    
     timer = Timer.periodic(Duration(seconds: 4), (Timer t) => _areModelsLoaded());
   }
 
@@ -66,6 +63,10 @@ class _LoadingState extends State<Loading> {
     super.dispose;
     timer.cancel();
   }
+
+
+
+
 
   @override
   Widget build(BuildContext context) {

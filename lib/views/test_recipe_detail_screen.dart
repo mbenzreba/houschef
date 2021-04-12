@@ -2,6 +2,7 @@
 import 'package:chef/views/loading_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:path/path.dart';
 
 
 
@@ -36,7 +37,38 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
   //var steps =[];
   //
   
-  
+  @override
+  void initState() {
+    
+    super.initState();
+    parseMap();
+  }
+
+
+  void parseMap() {
+
+    List<String> ingredients;
+    List<String> steps;
+
+    if (incomingRecipe['ingredients'].toString().contains('^')){
+      ingredients = incomingRecipe['ingredients'].toString().split('^');
+      incomingRecipe['ingredients'] = ingredients;
+    }
+
+    if (incomingRecipe['steps'].toString().contains('^')){
+      steps = incomingRecipe['steps'].toString().split('^');
+      incomingRecipe['steps'] = steps;
+    } 
+
+    else if (incomingRecipe['steps'].runtimeType == String ) {
+      String temp = incomingRecipe['steps'];
+      incomingRecipe['steps'] = new List<String>();
+      incomingRecipe['steps'].add(temp);
+    }
+
+  }
+
+
 
   Widget buildContainer(Widget child) {
     return Container(
@@ -105,6 +137,7 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
                     ),
                     child: Text(
                       // ingredients go here
+                      
                       incomingRecipe['ingredients'][index],
                     ),
                   ),
