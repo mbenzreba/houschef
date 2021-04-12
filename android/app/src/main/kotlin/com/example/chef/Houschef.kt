@@ -379,7 +379,7 @@ class Houschef : Activity, TextToSpeech.OnInitListener {
                     }
                 }
                 else {
-                    tts.speak("The requested step does have a time requirement", TextToSpeech.QUEUE_ADD, null, "No Temp")
+                    tts.speak("The requested step does not have a time requirement", TextToSpeech.QUEUE_ADD, null, "No Time")
                 }
                 
                 isTimeRequest = false

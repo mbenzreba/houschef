@@ -80,7 +80,7 @@ class _RecipeStepState extends State<RecipeStep> {
   Future<void> _startCookingLocal() async {
     Map<dynamic, dynamic> content = new Map<dynamic, dynamic>();
     try {
-      content = await platform.invokeMethod('startCookingLocal');
+      content = await platform.invokeMethod('startCookingLocal', this.recipe["steps"][0]);
     } on PlatformException catch (e) {
       content["step"] = "Failed to start cooking";
     }

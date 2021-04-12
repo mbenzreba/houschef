@@ -54,7 +54,8 @@ class _LoadingState extends State<Loading> {
   @override
   void initState() {
     super.initState();
-    
+    print(this.recipe);
+    print(this.recipe["steps"][0]);
     timer = Timer.periodic(Duration(seconds: 4), (Timer t) => _areModelsLoaded());
   }
 
