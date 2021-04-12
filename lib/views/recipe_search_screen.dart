@@ -29,6 +29,8 @@ class RecipeSearchScreen extends StatefulWidget {
 
 class _RecipeSearcScreenState extends State<RecipeSearchScreen> {
 
+  bool firstTime = false;
+
   static const platform = const MethodChannel("com.example.chef/search");
 
   static const platform_Two = const MethodChannel("com.example.chef/search");
@@ -79,6 +81,7 @@ class _RecipeSearcScreenState extends State<RecipeSearchScreen> {
       //_content = actualContent;
       if (titleOrSteps == false) {
         recipeMap = content;
+        firstTime = true;
       } else {
         selectedRecipe = content;
       }
@@ -91,52 +94,105 @@ class _RecipeSearcScreenState extends State<RecipeSearchScreen> {
     
 
     recipeMap.forEach((key, value) => urls.add(value['url']));
-    if (recipeMap != null) {return ListView.builder(
+    
+     return ListView.builder(
+      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
         itemCount: recipeMap.length,
         itemBuilder: (ctx, index) => GestureDetector(
                   onTap: () {
                     titleOrSteps = true;
-                    // setState(() {
-                    //   _search(urls[index]);
-                    // });
+                    
                     _search(urls[index]);
                     Navigator.push(context, MaterialPageRoute(builder: (ctx) => TestRecipeScreen(title: recipeMap[index]['title'], incomingRecipe: selectedRecipe)));
                   },
                   child: Card(
-                    color: Colors.white,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      child: Column(
-                        children: <Widget>[
-                          Text(
-                          recipeMap[index]['title'],
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
+                  shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(
+                          15),
+                        ),
 
-                          Text('Retrieved from allrecipes.com', style: TextStyle(fontSize: 12),),
-                        ], 
-                      ),
-                      
+
+                        elevation: 6,
+        margin: EdgeInsets.all(10),
+        child: Column(
+          children: <Widget>[
+            Stack(
+              children: <Widget>[
+
+                ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(15),
+                    topRight: Radius.circular(15),
+                  ),
+
+                  child: Image.network(
+                    recipeMap[index]['imgUrl'],
+                    errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                      return Image.asset('assets/images/notfound.jpg');
+                    }, 
+                    height: 200,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+
+                ),
+
+                Positioned(
+
+                  bottom: 20,
+                  right: 20,
+                  child: Container(
+                    width: 250,
+                    color: Colors.black54,
+                    padding: EdgeInsets.symmetric(
+                      vertical: 5, 
+                      horizontal: 20
                     ),
+
+                    child: Text(
+                      recipeMap[index]['title'],
+                      style: TextStyle(
+                        fontSize: 26, 
+                        color: Colors.white
+                      ),
+
+                      softWrap: true,
+                      overflow: TextOverflow.fade,
+                    ),
+                    
+                  ),
+                  
+                ),
+                Padding(padding: EdgeInsets.all(10),
+                child: Text('Retrieved from allrecipes.com', style: TextStyle(fontSize: 16, color: Colors.black),),)
+                
+              ],
+            ),
+
+            
+
+          ],
+        ),
+                    //   child: Column(
+                    //     children: <Widget>[
+                    //       Text(
+                    //       recipeMap[index]['title'],
+                    //       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    //       ),
+
+                    //       Text('Retrieved from allrecipes.com', style: TextStyle(fontSize: 12),),
+                    //     ], 
+                    //   ),
+                      
+                    // ),
                   ),
         ),
       );
-    } else {
-      return ListView(
-        children: <Widget>[
-         Container(
-           height: 50,
-           color: Colors.white,
-           child: const Center(child: Text('Entry A')),
-         ),
-        ],
-      );
+    
+      
     }
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +208,8 @@ class _RecipeSearcScreenState extends State<RecipeSearchScreen> {
                   textInputAction: TextInputAction.done,
                 ),
                 SizedBox(height: 20),
-                createRecipeWidgets(),
+                //!recipeMap.isNotEmpty && firstTime == false ? createRecipeWidgets() : Center(child: Text('Sorry! The recipe entered does not exist'))
+                createRecipeWidgets()
               ],
             ),
           ),
