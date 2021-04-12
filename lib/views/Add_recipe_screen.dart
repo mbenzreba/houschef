@@ -97,12 +97,12 @@ class _AddRecipes extends State<AddRecipes> {
       ),
     
       floatingActionButton: SpeedDial(
-        animatedIcon: AnimatedIcons.close_menu,
+        animatedIcon: AnimatedIcons.menu_arrow,
         children: [
 
         SpeedDialChild(
-          child: Icon(Icons.favorite),
-          label: "Favourite this recipe",
+          child: Icon(Icons.save),
+          label: "Add this recipe",
           backgroundColor: Colors.blue,
           onTap: () {
             

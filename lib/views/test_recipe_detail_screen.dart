@@ -57,7 +57,14 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
     if (incomingRecipe['steps'].toString().contains('^')){
       steps = incomingRecipe['steps'].toString().split('^');
       incomingRecipe['steps'] = steps;
+    } 
+
+    else if (incomingRecipe['steps'].runtimeType == String ) {
+      String temp = incomingRecipe['steps'];
+      incomingRecipe['steps'] = new List<String>();
+      incomingRecipe['steps'].add(temp);
     }
+
   }
 
 
