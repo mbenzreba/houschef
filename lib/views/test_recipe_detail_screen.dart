@@ -1,4 +1,5 @@
 
+import 'package:chef/views/loading_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:path/path.dart';
@@ -178,7 +179,7 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
           label: "Start Recipe",
           backgroundColor: Colors.green,
           onTap: () {
-           Navigator.push(context, MaterialPageRoute(builder: (ctx) => RecipeStep(incomingRecipe)));
+           Navigator.push(context, MaterialPageRoute(builder: (ctx) => Loading(incomingRecipe)));
           }
         ),
 

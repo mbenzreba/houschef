@@ -1,6 +1,10 @@
+import 'dart:async';
+
+import 'package:chef/views/recipe_step.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'dart:async';
+import 'package:flutter/services.dart';
 //import 'package:world_time_app/services/world_time.dart';
 
 
@@ -12,55 +16,56 @@ import 'package:flutter/services.dart';
 import '../dal/RecipeDAL.dart';
 
 class Loading extends StatefulWidget {
+  final Map<dynamic,dynamic> recipe;
+  Loading(this.recipe);
   @override
-  _LoadingState createState() => _LoadingState();
+  _LoadingState createState() => _LoadingState(recipe);
 }
 
 class _LoadingState extends State<Loading> {
 
-  bool programReady = false;
-  static const platform = const MethodChannel("com.example.chef/load");
 
-  RecipeDAL dal;
+  
+  final Map<dynamic, dynamic>  recipe;
+  _LoadingState(this.recipe);
+
+  static const platform = const MethodChannel("com.example.chef/load");
+  bool areModelsLoaded = false;
   Timer timer;
 
-  Future<void> _areModelsLoaded() async {
-    bool areThreadsLaunched;
+  void _areModelsLoaded() async {
+    bool result;
     try {
-      areThreadsLaunched = await platform.invokeMethod('areModelsLoaded');
-    } on PlatformException catch (e) {
-      areThreadsLaunched = false;
+      result = await platform.invokeMethod("areModelsLoaded") as bool;
+    } 
+    on PlatformException catch (e) {
+      result = false;
     }
 
     setState(() {
-      programReady = areThreadsLaunched;
+      areModelsLoaded = result;
+      if (areModelsLoaded) {
+        timer.cancel();
+        Navigator.push(context, MaterialPageRoute(builder: (ctx) => RecipeStep(recipe)));
+      }
     });
   }
 
   @override
   void initState() {
+    super.initState();
+    
+    timer = Timer.periodic(Duration(seconds: 4), (Timer t) => _areModelsLoaded());
+  }
 
-    _areModelsLoaded();
-    dal = new RecipeDAL(); 
-    //dal.CreateDatabase();
-
-   // timer = Timer.periodic(Duration(seconds: 2), (Timer t) => _getLatestStep());
+  @override
+  void dispose() {
+    super.dispose;
+    timer.cancel();
   }
 
 
 
-  // Future<void> _checkModels() async {
-  //   bool content;
-  //   try {
-  //     content = await platform.invokeMethod('getLatestStep');
-  //   } on PlatformException catch (e) {
-  //     content["step"] = "Failed to tell assistant";
-  //   }
-
-  //   setState(() {
-  //     _currentStep = content["step"];
-  //   });
-  // }
 
 
   @override
@@ -72,11 +77,23 @@ class _LoadingState extends State<Loading> {
      
       ),
       body: Center(
-      child: SpinKitRotatingCircle(
+
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          SpinKitRotatingCircle(
             color: Colors.white,
             size: 100.0,
             ),
-    ),);
+          Text(
+            "Getting everything ready...",
+          )
+        ]
+    ),
+    ),
+
+    );
     
   }
 }

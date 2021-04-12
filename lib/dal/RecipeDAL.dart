@@ -99,4 +99,13 @@ class RecipeDAL {
       whereArgs: [name],
     );
   }
+
+
+  Future<void> WipeDb() async {
+    // Get a reference to the database.
+    final tempDb= await db;
+
+    // Remove the Dog from the Database.
+    await tempDb.execute("DROP TABLE recipes");
+  }
 }

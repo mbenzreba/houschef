@@ -58,7 +58,7 @@ class Scraper {
         var index: Int = 0
         for(i in steps!!){
             
-            if(index > 0){
+            if(index > 0 && index < steps!!.size - 2){
                 r.steps?.add(i.text())
             }
 

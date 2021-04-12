@@ -67,6 +67,10 @@ class MainActivity: FlutterActivity() {
             else if (call.method == "getLatestStep") {
                 result.success(getLatestStep())
             }
+            /*
+            else if (call.method == "cancelCooking") {
+                houschef = null
+            } */
             else {
                 result.notImplemented()
             }
@@ -107,9 +111,9 @@ class MainActivity: FlutterActivity() {
     }
 
 
-    private fun getLatestStep() : HashMap<String, Any> {
+    private fun getLatestStep() : HashMap<Any, Any> {
         // Now return the map
-        var map: HashMap<String, Any> = HashMap<String, Any>()
+        var map: HashMap<Any, Any> = HashMap<Any, Any>()
         map.put("step", stepHolder.stepContents)
         map.put("highlights", stepHolder.stepHighlights)
 
@@ -385,15 +389,9 @@ class MainActivity: FlutterActivity() {
 
     private fun loadModels(): Boolean {
         
-        GlobalScope.launch(newSingleThreadContext("SentenceDetectorThread")) {
+        GlobalScope.launch(newSingleThreadContext("LoadModelsThread")) {
             loader.loadSentenceDetector()
-        }
-
-        GlobalScope.launch(newSingleThreadContext("TokenizerThread")) {
             loader.loadTokenizer()
-        }
-
-        GlobalScope.launch(newSingleThreadContext("ParserThread")) {
             loader.loadParser()
         }
 
