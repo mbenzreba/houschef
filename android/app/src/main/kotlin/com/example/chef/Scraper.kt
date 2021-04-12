@@ -6,7 +6,16 @@ import org.jsoup.nodes.Document
 import java.io.IOException
 import java.util.*
 
+
+//CLASS       : Scraper
+//DESCRIPTION : Class to retrieve and update recipes from the web
 class Scraper {
+
+
+    //METHOD      : search
+    //PARAMETERS  : searchTerm: String
+    //RETURNS     : List<Recipe>
+    //DESCRIPTION : Goes and retrieves data based on a search term
     fun search(searchTerm: String): List<Recipe> {
         val recipes: MutableList<Recipe> = ArrayList()
         var doc: Document? = null
@@ -40,11 +49,16 @@ class Scraper {
     }
 
 
-
+    //METHOD      : getDetails
+    //PARAMETERS  : r: Recipe
+    //RETURNS     : Recipe
+    //DESCRIPTION : A recipe is submitted and the details are updated based on the info in the url
+    //              returns the same thing as submitted if blank
     fun getDetails(r: Recipe): Recipe {
 
         var doc: Document? = null
 
+        //try to connect
         doc = try {
             Jsoup.connect(r.url).get()
         } catch (e: IOException) {
@@ -52,9 +66,12 @@ class Scraper {
             return r
         }
 
+        
         var steps = doc?.select("p")
         var ingredients = doc?.select("span.ingredients-item-name")
 
+
+        //grabbing the steps
         var index: Int = 0
         for(i in steps!!){
             
@@ -66,7 +83,7 @@ class Scraper {
             index++
         }
 
-
+        //grabbing the ingredients
         index = 0
         for(i in ingredients!!){
 
