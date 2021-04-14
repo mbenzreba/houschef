@@ -2,8 +2,8 @@ import 'dart:io';
 import 'dart:async';
 
 import 'package:chef/models/recipes.dart';
-import 'package:chef/views/test_recipe_detail_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:chef/views/recipe_detail_screen.dart';
 
 
 // Import for MethodChannel

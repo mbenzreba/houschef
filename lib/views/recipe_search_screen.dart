@@ -6,9 +6,7 @@ import 'package:flutter/services.dart';
 // Import for UintList
 import 'dart:typed_data';
 
-
-
-import './test_recipe_detail_screen.dart';
+import 'package:chef/views/recipe_detail_screen.dart';
 
 
 
