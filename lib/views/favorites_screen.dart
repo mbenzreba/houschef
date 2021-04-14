@@ -1,14 +1,16 @@
+///   Filename        :   favorites_screen.dart
+///   Date            :   4/11/2021
+///   Description     :   This file contains the widgets used for displaying the contents of the favorites page.
+///                       From here a user can select from a list of recipes saved to immediately begin cooking.
+///
 
-// import 'dart:html';
 
 import 'package:flutter/material.dart';
 
 
-
-
 import '../dal/RecipeDAL.dart';
 import '../dal/RecipeDataModel.dart';
-import '../views/test_recipe_detail_screen.dart';
+import 'recipe_detail_screen.dart';
 
 import 'dart:async';
 
@@ -17,6 +19,10 @@ import 'package:sqflite/sqflite.dart';
 import 'dart:io';
 
 
+
+/// Class                 : FavouriteScreen
+/// Description           : This class instantiates the favorite screen used to display a list of recipes a 
+///                         a user selected to favorite
 class FavoritesScreen extends StatefulWidget {
 
 
@@ -118,7 +124,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         ),
       ),
       
-    );//Card (child: Text(list[index].title), ); 
+    ); 
         
       }, 
       itemCount: list.length,
@@ -128,7 +134,10 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     
   }
 
-
+  //    METHOD      :   initState
+  //    PARAMETERS  :   void
+  //    RETURNS     :   void
+  //    DESCRIPTION :   initializes the state of the screen
   @override
   void initState() {
 
@@ -147,6 +156,12 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     timer.cancel();
   }
   
+
+
+  //    METHOD      :   getLatestData
+  //    PARAMETERS  :   void
+  //    RETURNS     :   void
+  //    DESCRIPTION :   Reads at a specified time to constanly check for the most up to date information regarding a saved recipe
   void GetLatestData(){
 
     setState(() {
@@ -157,6 +172,14 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     });
   }
 
+
+
+
+
+  //    METHOD      :     GetData
+  //    PARAMETERS  :     void
+  //    RETURNS     :     Future
+  //    DESCRIPTION :     Returns an instance of a future. Using asyc technology we await for a method in the future 
   Future<void> GetData() async {
 
     RecipeDAL dal = new RecipeDAL();
