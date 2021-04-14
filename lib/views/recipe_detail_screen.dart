@@ -70,32 +70,36 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
 
 
 
-  Widget buildContainer(Widget child) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(10),
+  Widget buildContainer(Widget child, double size) {
+    return Center(
+        child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        margin: EdgeInsets.all(10),
+        padding: EdgeInsets.all(10),
+        // remember to add Media Query so i can size this to any phone
+        height: size,
+        width: 300,
+        child: child,
       ),
-      margin: EdgeInsets.all(10),
-      padding: EdgeInsets.all(10),
-      // remember to add Media Query so i can size this to any phone
-      height: 200,
-      width: 300,
-      child: child,
     );
   }
 
 
 
 
-    Widget buildSectionTitle(BuildContext context, String text) {
+  Widget buildSectionTitle(BuildContext context, String text) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.title,
+      child: Center(
+        child: Text(
+          text,
+          style: Theme.of(context).textTheme.title,
+        ),
       ),
+      margin: EdgeInsets.symmetric(vertical: 10), 
     );
   }
 
@@ -136,14 +140,13 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
                       vertical: 5,
                     ),
                     child: Text(
-                      // ingredients go here
-                      
                       incomingRecipe['ingredients'][index],
                     ),
                   ),
                 ),
                 itemCount: incomingRecipe['ingredients'].length,
               ),
+              incomingRecipe['ingredients'].length * 40.0
             ),
             buildSectionTitle(context, 'Steps'),
             buildContainer(
@@ -163,6 +166,7 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
                 ),
                 itemCount: incomingRecipe['steps'].length,
               ),
+              incomingRecipe['steps'].length * 100.0
             ),
 
           ],
