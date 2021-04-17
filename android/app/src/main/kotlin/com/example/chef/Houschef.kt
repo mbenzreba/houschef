@@ -20,7 +20,6 @@ import java.util.*
 
 class Houschef : Activity, TextToSpeech.OnInitListener {
     private lateinit var tts:TextToSpeech // a TextToSpeech object used to have text read to the user
-    private lateinit var speech:SpeechRecognizer // SpeechRecognizer object used to setup a custom recognizer intent
 
     var ingredients:List<String> // the list of ingredients of the recipe
     var ingredientStep:Int = -1 // the current ingredient that the user is on of the recipe
@@ -99,64 +98,6 @@ class Houschef : Activity, TextToSpeech.OnInitListener {
             override fun onError(utteranceId: String) {}
             override fun onStart(utteranceId: String) {}
         })
-
-        speech = SpeechRecognizer.createSpeechRecognizer(currentContext)
-        speech.setRecognitionListener(object: RecognitionListener {
-            override fun onReadyForSpeech(params: Bundle?) {
-
-            }
-
-            override fun onBufferReceived(buffer: ByteArray?) {
-
-            }
-
-            override fun onEndOfSpeech() {
-
-            }
-
-            override fun onPartialResults(partialResults: Bundle?) {
-
-            }
-
-            override fun onError(error: Int) {
-                tts.speak(error.toString(), TextToSpeech.QUEUE_ADD, null)
-
-                when {
-                    // error 7: got input but cant determine it, reprompts user for input
-                    error == 7 -> {
-                        tts.speak("Unable to recognize request, please try again.", TextToSpeech.QUEUE_FLUSH, null, "Unrecognized")
-                    }
-                    // error 1: lost network connection
-                    error == 1 -> {
-
-                    }
-                    // error 6: went too long without any input, will sleep for 1 second and reprompt for input
-                    error == 6 -> {
-                        Thread.sleep(1000)
-                        listenForRequest(100)
-                    }
-                }
-            }
-
-            override fun onEvent(eventType: Int, params: Bundle?) {
-
-            }
-
-            override fun onResults(results: Bundle?) {
-                val result = results!!.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-
-                determineRequest(result!![0].toLowerCase())
-                processRequest()
-            }
-
-            override fun onRmsChanged(rmsdB: Float) {
-
-            }
-
-            override fun onBeginningOfSpeech() {
-
-            }
-        })
     }
 
 
@@ -182,12 +123,6 @@ class Houschef : Activity, TextToSpeech.OnInitListener {
 
         try {
             currentActivity.startActivityForResult(intent, listenCode)
-            /* 
-            currentActivity.runOnUiThread(object: Runnable {
-                override fun run() {
-                    speech.startListening(intent)
-                }
-            }) */
         }
         catch (e: Exception) {
             Log.e("Listen Error", e.message)
