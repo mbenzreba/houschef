@@ -1,3 +1,8 @@
+///     Filename        :     main.dart
+///     Date            :     4/11/2021
+///     Desciption      :     This file contains the Recipe class specification. Here a recipe object is describe with its given attributes and constructor
+///
+
 import 'package:flutter/foundation.dart';
 
 

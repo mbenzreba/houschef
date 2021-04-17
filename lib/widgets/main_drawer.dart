@@ -1,3 +1,10 @@
+///   Filename        :   main_drawer.dart
+///   Date            :   4/11/2021
+///   Description     :   This file contains the widgets used for displaying the contents of the Drawer page.
+///                       
+///
+
+
 import 'package:flutter/material.dart';
 
 import '../views/about_screen.dart';
@@ -5,7 +12,7 @@ import '../views/about_screen.dart';
 class MainDrawer extends StatelessWidget {
 
 
-
+  
   Widget buildListTile(String title, IconData icon, Function tapHandler) {
     return ListTile(
             leading: Icon(

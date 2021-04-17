@@ -1,3 +1,10 @@
+///   Filename        :   recipe_search_screen.dart
+///   Date            :   4/11/2021
+///   Description     :   This file contains the widgets used for displaying the contents of the recipe search screen page.
+///                       From here a user can search a recipe online.
+///
+
+
 import 'package:flutter/material.dart';
 
 // Import for MethodChannel
@@ -8,17 +15,18 @@ import 'dart:typed_data';
 
 
 
-import './test_recipe_detail_screen.dart';
+import 'recipe_detail_screen.dart';
 
 
-
+// CLASS          : RecipeSearchScreeen
+// DESCRIPTION    : This class is used to instantate the Recipe Search screen and contains the logic needed for searching the web for a recipe object
 class RecipeSearchScreen extends StatefulWidget {
 
   static const routeName = '/recipe-search';
 
   
 
-  // *****
+  
   TextEditingController searchController = TextEditingController();
 
   @override
@@ -43,11 +51,17 @@ class _RecipeSearcScreenState extends State<RecipeSearchScreen> {
   Map<dynamic, dynamic> selectedRecipe = new Map();
   var urls = [];
 
+
+
+
+  // METHOD             : _search
+  // PARAMETERS         : String value
+  // RETURNS            : Future
+  // DESCRIPTION        : This function is called upon when a user wishes to look up a recipe.
+  //                      This method invokes upon a java class used to extract recipe contents from the web.
   Future<void> _search(value) async {
 
-    // This is the important one
-    // content[0]['title'] to access the title of the recipe 
-    // content[0]['url'] to get the url  
+   
     Map<dynamic, dynamic> content;
     String name = "EMPTY_NAME";
     String bytes;
@@ -72,13 +86,12 @@ class _RecipeSearcScreenState extends State<RecipeSearchScreen> {
       }
       
     } on PlatformException catch (e) {
+      
     } 
-    //on NoSuchMethodError catch (e) {
-
-    //}
-
+    
+    // Called upon when the state of the page changes
     setState(() {
-      //_content = actualContent;
+      
       if (titleOrSteps == false) {
         recipeMap = content;
         firstTime = true;
@@ -89,10 +102,14 @@ class _RecipeSearcScreenState extends State<RecipeSearchScreen> {
     });
   }
 
+
+
+  // METHOD             : createRecipeWidgets
+  // PARAMETERS         : void
+  // RETURNS            : ListView
+  // DESCRIPTION        : This method creates a ListView to display the contents of a recipe once it is retrieve from the search
   ListView createRecipeWidgets() {
     
-    
-
     recipeMap.forEach((key, value) => urls.add(value['url']));
     
      return ListView.builder(
@@ -111,8 +128,6 @@ class _RecipeSearcScreenState extends State<RecipeSearchScreen> {
                   borderRadius: BorderRadius.circular(
                           15),
                         ),
-
-
                         elevation: 6,
         margin: EdgeInsets.all(10),
         child: Column(
@@ -170,28 +185,13 @@ class _RecipeSearcScreenState extends State<RecipeSearchScreen> {
               ],
             ),
 
-            
-
           ],
         ),
-                    //   child: Column(
-                    //     children: <Widget>[
-                    //       Text(
-                    //       recipeMap[index]['title'],
-                    //       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    //       ),
-
-                    //       Text('Retrieved from allrecipes.com', style: TextStyle(fontSize: 12),),
-                    //     ], 
-                    //   ),
-                      
-                    // ),
                   ),
         ),
       );
     
-      
-    }
+  }
   
 
   @override
@@ -208,15 +208,12 @@ class _RecipeSearcScreenState extends State<RecipeSearchScreen> {
                   textInputAction: TextInputAction.done,
                 ),
                 SizedBox(height: 20),
-                //!recipeMap.isNotEmpty && firstTime == false ? createRecipeWidgets() : Center(child: Text('Sorry! The recipe entered does not exist'))
                 createRecipeWidgets()
-              ],
-            ),
+            ],
           ),
         ),
-      );
+      ),
+    );
 
-
-    
   }
 }

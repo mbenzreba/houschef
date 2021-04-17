@@ -1,3 +1,11 @@
+///   Filename        :   tabs_screen.dart
+///   Date            :   4/11/2021
+///   Description     :   This file contains the widgets used for displaying the contents of the tabs page.
+///                       This page is responsible for navigating between the seawrch recipe screen, favourites screen,
+///                       and write your recipe screen.
+///                       
+///
+
 import 'package:flutter/material.dart';
 import '../models/recipes.dart';
 import 'package:flutter/services.dart';
@@ -12,9 +20,12 @@ import './favorites_screen.dart';
 
 import './recipe_search_screen.dart';
 
-import '../constants.dart';
 
 
+/// Class                 : TabsScreen
+/// Description           : This class instantiates the tabs screen. Composed of a bottom navigation bar this is the primary screen the user is brought to. 
+///                         From here the user can choose to navigate to their screen of choice. By default the recipe search screen is the primary screen the user
+///                         sees upon launch.
 class TabsScreen extends StatefulWidget {
 
   @override
@@ -29,7 +40,7 @@ class _TabsScreenState extends State<TabsScreen> {
 
   int _selectedPageIndex = 0;
 
-
+  // Initialize the state of the tabs screen for navigating between screens
   @override
   void initState() {
     
@@ -51,6 +62,12 @@ class _TabsScreenState extends State<TabsScreen> {
     super.initState();
   }
 
+
+  // METHOD           :   _selectPage
+  // PARAMETERS       :   int index
+  // RETURN           :   void
+  // DESCRIPTION      :   This method is called upon when a user taps on any one of the tabs to navigate through the app
+  //                      It takes an index used to differentiate between screens
   void _selectPage(int index) {
     setState(() {
       _selectedPageIndex = index;
@@ -58,6 +75,9 @@ class _TabsScreenState extends State<TabsScreen> {
   }
 
 
+
+
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
