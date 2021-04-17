@@ -9,10 +9,7 @@ import 'dart:io';
 import 'dart:async';
 
 import 'package:chef/models/recipes.dart';
-<<<<<<< HEAD
-import 'package:chef/views/recipe_detail_screen.dart';
-=======
->>>>>>> e076ee1bd8ec892d3950331841c12a7b8bed8240
+
 import 'package:flutter/material.dart';
 import 'package:chef/views/recipe_detail_screen.dart';
 

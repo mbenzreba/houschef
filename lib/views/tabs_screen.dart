@@ -20,10 +20,7 @@ import './favorites_screen.dart';
 
 import './recipe_search_screen.dart';
 
-<<<<<<< HEAD
-=======
 
->>>>>>> e076ee1bd8ec892d3950331841c12a7b8bed8240
 
 
 /// Class                 : TabsScreen

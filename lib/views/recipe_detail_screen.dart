@@ -81,7 +81,7 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
   }
 
 
-<<<<<<< HEAD
+
   // METHOD             : buildContainer
   // PARAMETERS         : Widget child
   // RETURNS            : Widget
@@ -98,40 +98,17 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
       height: 200,
       width: 300,
       child: child,
-=======
-
-  Widget buildContainer(Widget child, double size) {
-    return Center(
-        child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        margin: EdgeInsets.all(10),
-        padding: EdgeInsets.all(10),
-        // remember to add Media Query so i can size this to any phone
-        height: size,
-        width: 300,
-        child: child,
-      ),
->>>>>>> e076ee1bd8ec892d3950331841c12a7b8bed8240
     );
   }
 
 
 
-<<<<<<< HEAD
     // METHOD             : buildSectionTitle
     // PARAMETERS         : BuildContext context, String text
     // RETURNS            : Widget
     // DESCRIPTION        : This method recieves two parameters the first a context of type BuildContext and the second is a 
     //                      title of type String. This method designs a widget that will be used for displaying the recipe title on the page
     Widget buildSectionTitle(BuildContext context, String text) {
-=======
-
-  Widget buildSectionTitle(BuildContext context, String text) {
->>>>>>> e076ee1bd8ec892d3950331841c12a7b8bed8240
     return Container(
       child: Center(
         child: Text(
@@ -173,7 +150,6 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
                 ),
                 itemCount: incomingRecipe['ingredients'].length,
               ),
-              incomingRecipe['ingredients'].length * 40.0
             ),
             buildSectionTitle(context, 'Steps'),
             buildContainer(
@@ -193,7 +169,6 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
                 ),
                 itemCount: incomingRecipe['steps'].length,
               ),
-              incomingRecipe['steps'].length * 100.0
             ),
 
           ],
