@@ -13,9 +13,14 @@ import 'package:flutter/services.dart';
 // Import for UintList
 import 'dart:typed_data';
 
+<<<<<<< HEAD
 
 
 import 'recipe_detail_screen.dart';
+=======
+import 'package:chef/views/recipe_detail_screen.dart';
+
+>>>>>>> e076ee1bd8ec892d3950331841c12a7b8bed8240
 
 
 // CLASS          : RecipeSearchScreeen

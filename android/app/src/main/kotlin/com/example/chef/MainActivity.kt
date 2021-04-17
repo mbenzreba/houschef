@@ -1,5 +1,6 @@
 package com.example.chef
 
+// IMPORTS
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -19,14 +20,30 @@ import android.content.Intent
 
 import android.util.Log
 
+
+
+/**
+ * Main activity for method channel passing between Flutter and the underlying Android
+ * implementation of the Houschef logic.
+ */
 class MainActivity: FlutterActivity() {
 
+    /** The recipe we are currently cooking (ie the assistant is currently dictating) */
     var currentlyCooking: Recipe = Recipe()
+
+    /** The current step the assistant is dictating */
     var currentStep: Int = 0
+
+    /** The virtual assistant */
     var houschef: Houschef? = null
+
+    /** The string contents of the step currently being dictated by the assistant */
     var stepContent: String = ""
+
+    /** Used to load in models */
     var loader: PreParser = PreParser(false)
 
+    /** The contents of the step currently being dictated by the assistant */
     var stepHolder: StepHolder = StepHolder()
 
 
@@ -46,7 +63,9 @@ class MainActivity: FlutterActivity() {
 
 
     /**
+     * Configure the FlutterEngine for message passing on the above channels.
      * 
+     * @param[flutterEngine] needed to configure method channels for
      */
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -61,16 +80,15 @@ class MainActivity: FlutterActivity() {
             else if (call.method == "tellAssistant") {
                 result.success(tellAssistant())
             }
-            else if (call.method == "startCooking_SPH") {
-                result.success(tellAssistant())
-            }
             else if (call.method == "getLatestStep") {
                 result.success(getLatestStep())
             }
-            /*
+            else if (call.method == "startCookingLocal") {
+                result.success(startCookingLocal(call.arguments))
+            }
             else if (call.method == "cancelCooking") {
                 houschef = null
-            } */
+            }
             else {
                 result.notImplemented()
             }
@@ -111,6 +129,12 @@ class MainActivity: FlutterActivity() {
     }
 
 
+
+    /**
+     * Gets the latest step being dictated by the assistant.
+     * 
+     * @return a HashMap of the step and what words to highlight in the step
+     */
     private fun getLatestStep() : HashMap<Any, Any> {
         // Now return the map
         var map: HashMap<Any, Any> = HashMap<Any, Any>()
@@ -120,10 +144,54 @@ class MainActivity: FlutterActivity() {
         return map
     }
 
+    
+
+    /**
+     * Modifies the state of the activity. Initializes the RecipeWordTrees and information needed
+     * to accurately run the assistant.
+     */
+    private fun startCookingLocal(rawRecipe: Any) : HashMap<String, Any> {
+
+        // TODO: Write the actual function
+        // Scrape the recipe from the url and get the details
+        // Save these details to some SmartRecipe.kt
+        // Inside SmartRecipe, do what you have to do...
+        // Then, return the first step from SmartRecipe as a plain string!!
+        currentlyCooking = Recipe()
+
+        var singleStep: String = rawRecipe.toString()
+
+        var parses: MutableList<String> = mutableListOf()
+
+        parses = loader.rawToParses(singleStep)
+
+        for (parse in parses) {
+            // Add it to the recipe (r) as a SmartStep
+            var ss: SmartStep = SmartStep()
+            ss.tree = RecipeWordTreeArborist.get().createTree(parse)
+            currentlyCooking.smartSteps?.add(ss!!)
+        }
+        
+        
+        
+
+
+        currentStep = 0
+
+        // Now return the map
+        var map: HashMap<String, Any> = HashMap<String, Any>()
+        stepHolder.stepContents = currentlyCooking.smartSteps!!.get(0).tree.getSentence()
+        map.put("step", stepHolder.stepContents)
+        map.put("highlights", stepHolder.stepHighlights)
+
+        return map
+    }
+
 
 
     /**
-     * 
+     * Modifies the state of the MainActivity. Takes the URL of the recipe and returns the latest
+     * step being dictated to the user.
      */
     private fun startCooking(args: Any) : HashMap<String, Any> {
         // TODO: Write the actual function
@@ -192,7 +260,10 @@ class MainActivity: FlutterActivity() {
 
 
     /**
+     * Modifies the state of MainActivity. Starts up the virtual assistant and returns the
+     * latest step dictated by the assistant.
      * 
+     * @return the latest step dictated by the assistant
      */
     private fun tellAssistant() : HashMap<String, Any> {
         houschef = Houschef(this, this, currentlyCooking.steps!!, currentlyCooking.ingredients!!, currentlyCooking, this.stepHolder)
@@ -223,74 +294,19 @@ class MainActivity: FlutterActivity() {
 
 
 
-    /**
-     * 
-     */
-    private fun startCooking_SPH(args: Any) : String {
-        // TODO: Write the actual function
-        // Scrape the recipe from the url and get the details
-        // Save these details to some SmartRecipe.kt
-        // Inside SmartRecipe, do what you have to do...
-        // Then, return the first step from SmartRecipe as a plain string!!
-        currentlyCooking = Recipe()
-        if (args is String) {
-            currentlyCooking.url = args
-        }
-        
-
-        var scraper: Scraper = Scraper()
-        currentlyCooking.steps = mutableListOf()
-        currentlyCooking.ingredients = mutableListOf()
-        currentlyCooking.smartSteps = mutableListOf()
-
-        GlobalScope.launch(Dispatchers.IO) {
-            currentlyCooking = scraper.getDetails(currentlyCooking)
-        }
-
-        Thread.sleep(4000)
-
-        
-        
-
-        // Use Recipe to populate the SmartSteps it keeps track of
-
-        // OpenNLP 
-        /* var pp: PreParser = PreParser() */
-        var rawRecipe: String = ""
-
-        // Construct entire recipe as one whole string
-        for (step in currentlyCooking.steps!!) {
-            rawRecipe = rawRecipe + " " + step
-        }
-
-        var parses: MutableList<String> = mutableListOf()
-        
-        /* 
-        parses = loader.rawToParses(rawRecipe)
-
-        for (parse in parses) {
-            // Add it to the recipe (r) as a SmartStep
-            var ss: SmartStep = SmartStep()
-            ss.tree = RecipeWordTreeArborist.get().createTree(parse)
-            currentlyCooking.smartSteps?.add(ss!!)
-        }
-        */
-        
-        
-        
-
-
-        currentStep = 0
-        return currentlyCooking.steps!!.get(0)
-    }
-
-
-
     /***************************************************************************************************/
     /************************************** ONLINE SEARCH CHANNEL **************************************/
     /***************************************************************************************************/
 
 
+
+    /**
+     * Search online for recipes corresponding to the terms argument. Returns a map of Recipe selection
+     * maps (essentially a list of objects).
+     * 
+     * @param[terms] terms to search by
+     * @return a list of selections taken from online
+     */
     private fun search(terms: Any) : HashMap<Int, HashMap<String, String>> {
         var outerHashMap : HashMap<Int, HashMap<String, String>> = HashMap<Int, HashMap<String, String>> ()
 
@@ -313,39 +329,23 @@ class MainActivity: FlutterActivity() {
                 outerHashMap.put(count, recipe)
                 count++
             }
-
-            
-
             
         }
         // NETWORKING ****
 
         Thread.sleep(3500)
 
-        
-
-        /* 
-        // Add the 1st inner hashmap
-        var innerHashMap : HashMap<String, Any> = HashMap<String, Any> ()
-        val bytes1 = "Youngster".toByteArray()
-        innerHashMap.put("name", "Youngster")
-        innerHashMap.put("bytes", bytes1)
-
-        outerHashMap.put(1, innerHashMap)
-
-        // Add the 1st inner hashmap 
-        var innerHashMap2 : HashMap<String, Any> = HashMap<String, Any> ()
-        val bytes2 = "Elder".toByteArray()
-        innerHashMap2.put("name", "Elder")
-        innerHashMap2.put("bytes", bytes2)
-
-        outerHashMap.put(2, innerHashMap2) */
-
         return outerHashMap
-        
     }
 
 
+
+    /**
+     * Given a URL, returns a more complete map of the recipe (represented at that URL).
+     * 
+     * @param[url] the URL to get the rest of the recipe details from
+     * @return the recipe represented as a map, where each field is a string
+     */
     private fun searchFullDetails(url: Any) : HashMap<String, Any> {
         var details : HashMap<String, Any> = HashMap<String, Any> ()
 
@@ -382,11 +382,19 @@ class MainActivity: FlutterActivity() {
     }
 
 
+
     /***************************************************************************************************/
     /************************************** MODEL LOADING CHANNEL **************************************/
     /***************************************************************************************************/
 
 
+
+    /**
+     * Loads the models in a seperate thread so that parsing with pre-trained models can be done on
+     * incoming recipes.
+     * 
+     * @return true
+     */
     private fun loadModels(): Boolean {
         
         GlobalScope.launch(newSingleThreadContext("LoadModelsThread")) {

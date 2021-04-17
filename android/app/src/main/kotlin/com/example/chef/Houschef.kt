@@ -1,3 +1,9 @@
+// Class       : Houschef
+// Description : The Houschef class encapsulates the voice assistant of the Houschef application.
+//               Keeps track of the current step that the user is on and allows voice input for them
+//               to navigate forward and backwards throughout the recipe, as well as request specific
+//               ingredients, temperature requirements, and time requirements for the recipe.
+
 package com.example.chef
 
 import android.app.Activity
@@ -14,25 +20,24 @@ import java.util.*
 
 class Houschef : Activity, TextToSpeech.OnInitListener {
     private lateinit var tts:TextToSpeech // a TextToSpeech object used to have text read to the user
-    private lateinit var speech:SpeechRecognizer
 
     var ingredients:List<String> // the list of ingredients of the recipe
     var ingredientStep:Int = -1 // the current ingredient that the user is on of the recipe
     var finishedIngredients:Boolean = false // keeps track if the assistant will read ingredients
     var isPrevRequest:Boolean = false // keeps track if the current request made is a request for a previous step/ingredient
 
-    var isOneIngredientRequest:Boolean = false
-    var isListIngredientRequest:Boolean = false
+    var isOneIngredientRequest:Boolean = false // used to determine that the user requested a single ingredient
+    var isListIngredientRequest:Boolean = false // used to determine that the user requested the list of ingredients
 
     var instructions:List<String> // recipe instructions that will be read to the user
     var currentStep:Int = -1  // the current step that the user is on of the recipe
 
-    var isAllIngredientRequest:Boolean = false
-    var allIngredientsStep:Int = -1
-    var numOfIngredientsInStep:Int = -1
+    var isAllIngredientRequest:Boolean = false // used to determine that the user requested all ingredients from a step
+    var allIngredientsStep:Int = -1 // keeps track of which step the user would like the ingredients to be retireved from
+    var numOfIngredientsInStep:Int = -1 // keeps track of the number of ingredients in a step
 
-    var isTimeRequest:Boolean = false
-    var isTempRequest:Boolean = false
+    var isTimeRequest:Boolean = false // used to determine that the user requested the time for a specific step
+    var isTempRequest:Boolean = false // used to determine that the user requested the temperature for a specific step
 
     var unrecognizedRequest:Boolean = false // keeps track if user responded with an unrecognized command
     var cancelRequest:Boolean = false // keeps track if the user responded with a cancel command
@@ -93,64 +98,6 @@ class Houschef : Activity, TextToSpeech.OnInitListener {
             override fun onError(utteranceId: String) {}
             override fun onStart(utteranceId: String) {}
         })
-
-        speech = SpeechRecognizer.createSpeechRecognizer(currentContext)
-        speech.setRecognitionListener(object: RecognitionListener {
-            override fun onReadyForSpeech(params: Bundle?) {
-
-            }
-
-            override fun onBufferReceived(buffer: ByteArray?) {
-
-            }
-
-            override fun onEndOfSpeech() {
-
-            }
-
-            override fun onPartialResults(partialResults: Bundle?) {
-
-            }
-
-            override fun onError(error: Int) {
-                tts.speak(error.toString(), TextToSpeech.QUEUE_ADD, null)
-
-                when {
-                    // error 7: got input but cant determine it, reprompts user for input
-                    error == 7 -> {
-                        tts.speak("Unable to recognize request, please try again.", TextToSpeech.QUEUE_FLUSH, null, "Unrecognized")
-                    }
-                    // error 1: lost network connection
-                    error == 1 -> {
-
-                    }
-                    // error 6: went too long without any input, will sleep for 1 second and reprompt for input
-                    error == 6 -> {
-                        Thread.sleep(1000)
-                        listenForRequest(100)
-                    }
-                }
-            }
-
-            override fun onEvent(eventType: Int, params: Bundle?) {
-
-            }
-
-            override fun onResults(results: Bundle?) {
-                val result = results!!.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-
-                determineRequest(result!![0].toLowerCase())
-                processRequest()
-            }
-
-            override fun onRmsChanged(rmsdB: Float) {
-
-            }
-
-            override fun onBeginningOfSpeech() {
-
-            }
-        })
     }
 
 
@@ -176,12 +123,6 @@ class Houschef : Activity, TextToSpeech.OnInitListener {
 
         try {
             currentActivity.startActivityForResult(intent, listenCode)
-            /* 
-            currentActivity.runOnUiThread(object: Runnable {
-                override fun run() {
-                    speech.startListening(intent)
-                }
-            }) */
         }
         catch (e: Exception) {
             Log.e("Listen Error", e.message)
@@ -379,7 +320,7 @@ class Houschef : Activity, TextToSpeech.OnInitListener {
                     }
                 }
                 else {
-                    tts.speak("The requested step does have a time requirement", TextToSpeech.QUEUE_ADD, null, "No Temp")
+                    tts.speak("The requested step does not have a time requirement", TextToSpeech.QUEUE_ADD, null, "No Time")
                 }
                 
                 isTimeRequest = false

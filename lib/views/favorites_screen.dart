@@ -149,6 +149,12 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     timer = Timer.periodic(Duration(seconds: 1), (Timer t) => GetLatestData());
 
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+    timer.cancel();
+  }
   
 
 

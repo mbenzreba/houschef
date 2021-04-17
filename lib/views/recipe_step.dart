@@ -9,8 +9,12 @@ import 'dart:io';
 import 'dart:async';
 
 import 'package:chef/models/recipes.dart';
+<<<<<<< HEAD
 import 'package:chef/views/recipe_detail_screen.dart';
+=======
+>>>>>>> e076ee1bd8ec892d3950331841c12a7b8bed8240
 import 'package:flutter/material.dart';
+import 'package:chef/views/recipe_detail_screen.dart';
 
 
 // Import for MethodChannel
@@ -51,7 +55,13 @@ class _RecipeStepState extends State<RecipeStep> {
   // initState() used to intialze the data necessary to run the recipe_step page
   @override
   void initState() {
-    _startCooking(this.recipe["url"]);
+    if (this.recipe["url"] == "") {
+      _startCookingLocal();
+    }
+    else {
+      _startCooking(this.recipe["url"]);
+    }
+    
     _tellAssistant();
     timer = Timer.periodic(Duration(seconds: 2), (Timer t) => _getLatestStep());
   }
@@ -77,6 +87,19 @@ class _RecipeStepState extends State<RecipeStep> {
     }
 
     // setState() a method called upon whenever the data of the page changes
+    setState(() {
+      _currentStep = content["step"];
+    });
+  }
+
+  Future<void> _startCookingLocal() async {
+    Map<dynamic, dynamic> content = new Map<dynamic, dynamic>();
+    try {
+      content = await platform.invokeMethod('startCookingLocal', this.recipe["steps"][0]);
+    } on PlatformException catch (e) {
+      content["step"] = "Failed to start cooking";
+    }
+
     setState(() {
       _currentStep = content["step"];
     });
