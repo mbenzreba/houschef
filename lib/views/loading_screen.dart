@@ -1,3 +1,14 @@
+///     Filename        :   loading_screen.dart 
+///     Date            :   4/11/2021
+///     Description     :   This file contains the animation for a loading screen which offers a transition from the recipe detail
+///                         screen to the recipe_step_screen. Models that are used to parse voice recognition input must be loaded prior to 
+///                         the user having access to them.
+///
+///
+
+
+
+
 import 'dart:async';
 
 import 'package:chef/views/recipe_step.dart';
@@ -33,6 +44,13 @@ class _LoadingState extends State<Loading> {
   bool areModelsLoaded = false;
   Timer timer;
 
+
+  //    METHOD          :     _areModelsLoaded
+  //    PARAMETERS      :     void
+  //    RETURNS         :     void
+  //    DESCRIPTION     :     An async method used to constantly check if the models have finshed rendering. Once 
+  //                          done a flag is set to notify the application that the models have finshed and we can begin building the 
+  //                          screen for the user to see and interact with.
   void _areModelsLoaded() async {
     bool result;
     try {
@@ -51,6 +69,9 @@ class _LoadingState extends State<Loading> {
     });
   }
 
+
+
+  
   @override
   void initState() {
     super.initState();

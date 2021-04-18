@@ -1,4 +1,9 @@
-
+///   Filename        :   recipe_detail_screen.dart
+///   Date            :   4/11/2021
+///   Description     :   This file contains the widgets used for displaying the contents of the recipe detail screen page.
+///                       From here a user will be displayed the contents of a recipe which consists of their respective 
+///                       ingredients and steps.
+///
 import 'package:chef/views/loading_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -6,13 +11,17 @@ import 'package:path/path.dart';
 
 
 
-import '../views/recipe_step.dart';
+import 'recipe_step.dart';
 
 import '../dal/RecipeDAL.dart';
 import '../dal/RecipeDataModel.dart';
 
 
 
+/// Class                 : TestRecipeScreen
+/// Parameters            : String title, MAP<dynamic,dynamic> incomingRecipe
+/// Description           : This class instantiates the recipe detail screen. This class takes two paramethers a title an a MAP object consisting of 
+///                         a recipe ingredients and steps. These two are used to display the content for the user regarding the recipe they've selected
 class TestRecipeScreen extends StatefulWidget {
 
   String title;
@@ -34,9 +43,7 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
   Map<dynamic,dynamic> incomingRecipe;
   _TestRecipeScreenState(this.title, this.incomingRecipe);
 
-  //var steps =[];
-  //
-  
+  // initState() used to initialize the content of recipe detail page
   @override
   void initState() {
     
@@ -45,6 +52,11 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
   }
 
 
+
+  // METHOD             : _parseMap
+  // PARAMETERS         : void
+  // RETURNS            : void
+  // DESCRIPTION        : This method is used to parse a recipe step one at a time looking for a specified delimiter.
   void parseMap() {
 
     List<String> ingredients;
@@ -70,28 +82,33 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
 
 
 
-  Widget buildContainer(Widget child, double size) {
-    return Center(
-        child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        margin: EdgeInsets.all(10),
-        padding: EdgeInsets.all(10),
-        // remember to add Media Query so i can size this to any phone
-        height: size,
-        width: 300,
-        child: child,
+  // METHOD             : buildContainer
+  // PARAMETERS         : Widget child
+  // RETURNS            : Widget
+  // DESCRIPTION        : This method recieves a widget and builds a container with the necessary padding and decoration for displaying the widget.
+  Widget buildContainer(Widget child) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(10),
       ),
+      margin: EdgeInsets.all(10),
+      padding: EdgeInsets.all(10),
+      height: 200,
+      width: 300,
+      child: child,
     );
   }
 
 
 
-
-  Widget buildSectionTitle(BuildContext context, String text) {
+    // METHOD             : buildSectionTitle
+    // PARAMETERS         : BuildContext context, String text
+    // RETURNS            : Widget
+    // DESCRIPTION        : This method recieves two parameters the first a context of type BuildContext and the second is a 
+    //                      title of type String. This method designs a widget that will be used for displaying the recipe title on the page
+    Widget buildSectionTitle(BuildContext context, String text) {
     return Container(
       child: Center(
         child: Text(
@@ -106,19 +123,6 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //incomingRecipe.forEach((key, value) => steps.add(value['steps']));
-
-    // test scaffold
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     title: Text(
-    //       title,
-    //     ),
-    //   ),
-    //   body: Center(child: Text('We Made IT!'),),
-    // );
-    // 
-    
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -146,7 +150,6 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
                 ),
                 itemCount: incomingRecipe['ingredients'].length,
               ),
-              incomingRecipe['ingredients'].length * 40.0
             ),
             buildSectionTitle(context, 'Steps'),
             buildContainer(
@@ -166,7 +169,6 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
                 ),
                 itemCount: incomingRecipe['steps'].length,
               ),
-              incomingRecipe['steps'].length * 100.0
             ),
 
           ],
@@ -246,18 +248,16 @@ class _TestRecipeScreenState extends State<TestRecipeScreen> {
         ),
 
       ],),
-
-
-
-      // floatingActionButton: FloatingActionButton(
-      //   child: Icon(
-      //     isFavorite(recipeId) ? Icons.favorite : Icons.favorite_border,
-      //   ),
-      //   onPressed: () => toggleFavorite(recipeId),
-      // ),
     );
   }
 
+
+
+  // METHOD           : WriteRecipe
+  // PARAMETERS       : RecipeDataModel
+  // RETURN           : Future
+  // DESCRIPTION      : This function returns a future used for establishing a connection to a databse for inserting a recipe
+  //                    data model. This is called upon when a user wishes to favorite a recipe or write one of their own.
   Future<void> WriteRecipe(RecipeDataModel model) async {
 
     RecipeDAL dal = new RecipeDAL();

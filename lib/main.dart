@@ -1,3 +1,13 @@
+///     Program         :     housechef
+///     Filename        :     main.dart
+///     Date            :     4/11/2021
+///     Desciption      :     This file contains the void main() method use to lauch the appication.
+///                           From here all application wide data is set and initalized along with defining 
+///                           proper routing methods for navigation across screens.
+///
+
+
+
 import 'package:flutter/material.dart';
 import './views/Add_recipe_screen.dart';
 
@@ -52,34 +62,6 @@ class _MyAppState extends State<MyApp> {
 
   }
 
-
- 
-  // List<Recipe> _favoritedRecipes = [];
-
-
-  // void _toggleFavorite(String recipeId) {
-  //   final exsitingIndex =
-  //       _favoritedRecipes.indexWhere((recipe) => recipe.id == recipeId);
-
-  //   if (exsitingIndex >= 0) {
-  //     setState(() {
-  //       _favoritedRecipes.removeAt(exsitingIndex);
-  //     });
-  //   } else {
-  //     setState(() {
-  //       _favoritedRecipes.add(
-  //         DUMMY_MEALS.firstWhere((recipe) => recipe.id == recipeId));
-  //     });
-  //   }
-  //}
-
-
-
-  // bool _isRecipeFavorite(String id) {
-  //   return _favoritedRecipes.any((recipe) => recipe.id == id);
-  // }
-
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -107,7 +89,7 @@ class _MyAppState extends State<MyApp> {
         AboutScreen.routeName: (ctx) => AboutScreen(),
         RecipeStep.routeName: (ctx) => RecipeStep(Map<dynamic, dynamic>()),
         RecipeSearchScreen.routeName: (ctx) => RecipeSearchScreen(),
-        //TestRecipeScreen.routeName: (ctx) => TestRecipeScreen(),
+        
       },
 
       onGenerateRoute: (settings) {
